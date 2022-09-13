@@ -5,26 +5,28 @@
   background-color: white;
   padding: 4px 10px;
   overflow: auto;
+  font-size: 14px;
 }
 
-.medplum-patient-header > .medplum-avatar {
+.medplum-patient-header > .medplum-avatar.large {
   margin: 5px;
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
+  line-height: 80px;
+  font-size: 40px;
 }
 
-.medplum-patient-header > dl {
-  margin: 5px 10px 5px 20px;
-}
-
-.medplum-patient-header dt {
-  color: #444;
-  text-transform: uppercase;
-  font-size: 10px;
+.medplum-patient-header-details {
+  flex: 1;
+  flex-direction: column;
+  margin-left: 24px;
   white-space: nowrap;
+  line-height: 25px;
 }
 
-.medplum-patient-header dd {
-  font-size: 16px;
-  font-weight: bold;
-  margin-left: 0;
-  white-space: nowrap;
+.medplum-patient-header-details strong {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
 }

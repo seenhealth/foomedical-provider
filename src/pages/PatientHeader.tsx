@@ -1,6 +1,6 @@
-import { calculateAgeString } from '@medplum/core';
-import { Patient, Reference } from '@medplum/fhirtypes';
-import { Avatar, HumanNameDisplay, MedplumLink, Scrollable, useResource } from '@medplum/react';
+import { calculateAgeString, formatAddress, formatHumanName } from '@medplum/core';
+import { HumanName, Patient, Reference } from '@medplum/fhirtypes';
+import { Avatar, Scrollable, useResource } from '@medplum/react';
 import React from 'react';
 import './PatientHeader.css';
 
@@ -13,50 +13,39 @@ export function PatientHeader(props: PatientHeaderProps): JSX.Element | null {
   if (!patient) {
     return null;
   }
+  const name = patient.name?.[0] as HumanName;
+  const birthDate = patient.birthDate as string;
+  const address = patient.address?.[0];
+  const email = patient.telecom?.find((t) => t.system === 'email');
+  const phone = patient.telecom?.find((t) => t.system === 'phone');
+
   return (
-    <Scrollable className="medplum-surface" height={74}>
+    <Scrollable className="medplum-surface" height={150}>
       <div className="medplum-patient-header">
         <Avatar value={patient} size="large" color={getDefaultColor(patient)} />
-        <dl>
-          <dt>Name</dt>
-          <dd>
-            <MedplumLink to={patient}>
-              {patient.name ? <HumanNameDisplay value={patient.name?.[0]} options={{ use: false }} /> : '[blank]'}
-            </MedplumLink>
-          </dd>
-        </dl>
-        {patient.birthDate && (
-          <>
-            <dl>
-              <dt>DoB</dt>
-              <dd>{patient.birthDate}</dd>
-            </dl>
-            <dl>
-              <dt>Age</dt>
-              <dd>{calculateAgeString(patient.birthDate)}</dd>
-            </dl>
-          </>
-        )}
-        {patient.gender && (
-          <dl>
-            <dt>Gender</dt>
-            <dd>{patient.gender}</dd>
-          </dl>
-        )}
-        {patient.address && (
-          <>
-            <dl>
-              <dt>State</dt>
-              <dd>{patient.address?.[0]?.state}</dd>
-            </dl>
-          </>
-        )}
-        {patient.identifier?.map((identifier, index) => (
-          <dl key={`${index}-${patient.identifier?.length}`}>
-            <dt>{identifier?.system}</dt>
-            <dd>{identifier?.value}</dd>
-          </dl>
-        ))}
+        <div className="medplum-patient-header-details">
+          <div>
+            <strong>Name:</strong> {formatHumanName(patient.name?.[0] as HumanName)}
+          </div>
+          <div>
+            <strong>Birth date:</strong> {birthDate} ({calculateAgeString(birthDate)})
+          </div>
+          {address && (
+            <div>
+              <strong>Address:</strong> {formatAddress(address)}
+            </div>
+          )}
+          {email && (
+            <div>
+              <strong>Email:</strong> {email.value}
+            </div>
+          )}
+          {phone && (
+            <div>
+              <strong>Phone:</strong> {phone.value}
+            </div>
+          )}
+        </div>
       </div>
     </Scrollable>
   );

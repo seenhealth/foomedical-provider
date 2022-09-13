@@ -1,7 +1,8 @@
 import { DiagnosticReport, Patient, ServiceRequest } from '@medplum/fhirtypes';
-import { AddressDisplay, Avatar, ContactPointDisplay, Loading, ResourceName, useMedplum } from '@medplum/react';
+import { Document, Loading, Tab, TabList, TabPanel, TabSwitch, useMedplum } from '@medplum/react';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { PatientHeader } from './PatientHeader';
 import './PatientPage.css';
 
 interface PatientGraphQLResponse {
@@ -13,8 +14,12 @@ interface PatientGraphQLResponse {
 }
 
 export function PatientPage(): JSX.Element {
+  const navigate = useNavigate();
+  const { id, tab } = useParams() as {
+    id: string;
+    tab: string;
+  };
   const medplum = useMedplum();
-  const { id } = useParams();
   const [response, setResponse] = useState<PatientGraphQLResponse>();
 
   useEffect(() => {
@@ -66,61 +71,59 @@ export function PatientPage(): JSX.Element {
   }
 
   const { patient, orders, reports } = response.data;
+  const defaultTab = 'overview';
 
   return (
-    <div className="patient-page">
-      <div className="patient-sidebar">
-        <div className="patient-title">
-          <Avatar value={patient} />
-          <ResourceName value={patient} />
-        </div>
-        <h3>Birth Date</h3>
-        <div>{patient.birthDate}</div>
-        <h3>Address</h3>
-        {patient.address?.map((a, i) => (
-          <div key={`address-${i}`}>
-            <AddressDisplay value={a} />
-          </div>
-        ))}
-        <h3>Contact</h3>
-        {patient.telecom?.map((t, i) => (
-          <div key={`contact-${i}`}>
-            <ContactPointDisplay value={t} />
-          </div>
-        ))}
-      </div>
-      <div className="patient-demographics">
-        <div>Created Date: {patient.meta?.lastUpdated}</div>
-        <h3>Demographics</h3>
-        <table>
-          <tbody>
-            <tr>
-              <td>Prefix: {patient?.name?.[0]?.prefix}</td>
-              <td>First: {patient?.name?.[0]?.given?.[0]}</td>
-              <td>Middle: {patient?.name?.[0]?.given?.[1]}</td>
-              <td>Last: {patient?.name?.[0]?.family}</td>
-              <td>Suffix: {patient?.name?.[0]?.suffix}</td>
-            </tr>
-          </tbody>
-        </table>
-        <h3>Orders ({orders?.length})</h3>
-        <ul>
-          {orders?.map((o, i) => (
-            <li key={`order-${i}`}>
-              <a href={`/ServiceRequest/${o.id}`}>{o.code?.text}</a> ({formatDate(o.meta?.lastUpdated)})
-            </li>
-          ))}
-        </ul>
-        <h3>Reports ({reports?.length})</h3>
-        <ul>
-          {reports?.map((o, i) => (
-            <li key={`report-${i}`}>
-              <a href={`/DiagnosticReport/${o.id}`}>{o.code?.text}</a> ({formatDate(o.meta?.lastUpdated)})
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    <>
+      <PatientHeader patient={patient} />
+      <TabList value={tab || defaultTab} onChange={(newTab) => navigate(`/Patient/${id}/${newTab}`)}>
+        <Tab name="overview" label="Overview" />
+        <Tab name="visits" label="Visits" />
+        <Tab name="labreports" label="Lab Reports" />
+        <Tab name="careplans" label="Care Plans" />
+        <Tab name="documents" label="Documents" />
+      </TabList>
+      <Document>
+        <TabSwitch value={tab || defaultTab}>
+          <TabPanel name="overview">
+            <h2>Overview</h2>
+            <ul>
+              <li>Encounters</li>
+              <li>ServiceRequests</li>
+              <li>DiagnosticReports</li>
+            </ul>
+          </TabPanel>
+          <TabPanel name="visits">
+            <h2>Visits</h2>
+            <ul>
+              <li>Encounters</li>
+            </ul>
+          </TabPanel>
+          <TabPanel name="labreports">
+            <h2>Lab Reports</h2>
+            <ul>
+              <li>DiagnosticReports</li>
+            </ul>
+          </TabPanel>
+          <TabPanel name="careplans">
+            <h2>Care Plans</h2>
+            <ul>
+              <li>CarePlans</li>
+              <li>RequestGroups</li>
+            </ul>
+          </TabPanel>
+          <TabPanel name="documents">
+            <h2>Documents</h2>
+            <ul>
+              <li>Media</li>
+              <li>DocumentReference</li>
+              <li>Questionnaire</li>
+              <li>QuestionnaireResponse</li>
+            </ul>
+          </TabPanel>
+        </TabSwitch>
+      </Document>
+    </>
   );
 }
 
