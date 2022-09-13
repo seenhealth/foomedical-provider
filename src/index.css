@@ -1,0 +1,36 @@
+:root {
+  --medplum-font-family: 'Roboto', sans-serif;
+  --medplum-monospace-font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  --medplum-font-small: 14px;
+  --medplum-font-normal: 16px;
+  --medplum-font-big: 18px;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+header a {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.medplum-sidebar > ul > li > a {
+  font-size: 15px;
+}
+
+.medplum-timeline-item {
+  max-width: 900px !important;
+}
+
+.medplum-timeline .medplum-timeline-item-title > a {
+  font-size: 14px;
+  font-weight: 500;
+}
