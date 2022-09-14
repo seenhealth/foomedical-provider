@@ -9,6 +9,7 @@ import { PatientsList } from './pages/PatientsList';
 import { ProfilePage } from './pages/ProfilePage';
 import { ResourcePage } from './pages/ResourcePage';
 import { SignInPage } from './pages/SignInPage';
+import { TaskPage } from './pages/TaskPage';
 
 export function App(): JSX.Element | null {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ export function App(): JSX.Element | null {
             <Route path="/patients" element={<PatientsList />} />
             <Route path="/Patient/:id/:tab" element={<PatientPage />} />
             <Route path="/Patient/:id" element={<PatientPage />} />
+            <Route path="/Task/:id" element={<TaskPage />} />
             <Route path="/:resourceType/:id" element={<ResourcePage />} />
           </Routes>
         </Suspense>

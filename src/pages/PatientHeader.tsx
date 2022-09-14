@@ -25,7 +25,7 @@ export function PatientHeader(props: PatientHeaderProps): JSX.Element | null {
         <Avatar value={patient} size="large" color={getDefaultColor(patient)} />
         <div className="medplum-patient-header-details">
           <div>
-            <strong>Name:</strong> {formatHumanName(patient.name?.[0] as HumanName)}
+            <strong>Name:</strong> {formatHumanName(name)}
           </div>
           <div>
             <strong>Birth date:</strong> {birthDate} ({calculateAgeString(birthDate)})
