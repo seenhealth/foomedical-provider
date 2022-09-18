@@ -3,18 +3,20 @@ import { ErrorBoundary, Header, Loading, useMedplum } from '@medplum/react';
 import React, { Suspense } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { CarePlansList } from './pages/CarePlansList';
 import { FormsList } from './pages/FormsList';
 import { HomePage } from './pages/HomePage';
 import { LandingPage } from './pages/LandingPage';
 import { PatientPage } from './pages/PatientPage';
 import { PatientsList } from './pages/PatientsList';
+import { PlanDefinitionPage } from './pages/PlanDefinitionPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { QuestionnairePage } from './pages/QuestionnairePage';
 import { ResourcePage } from './pages/ResourcePage';
 import { SchedulePage } from './pages/SchedulePage';
 import { SignInPage } from './pages/SignInPage';
 import { TaskPage } from './pages/TaskPage';
-import 'react-toastify/dist/ReactToastify.css';
 
 export function App(): JSX.Element | null {
   const navigate = useNavigate();
@@ -77,8 +79,11 @@ export function App(): JSX.Element | null {
             <Route path="/patients" element={<PatientsList />} />
             <Route path="/visits" element={<SchedulePage />} />
             <Route path="/forms" element={<FormsList />} />
+            <Route path="/careplans" element={<CarePlansList />} />
             <Route path="/Patient/:id/:tab" element={<PatientPage />} />
             <Route path="/Patient/:id" element={<PatientPage />} />
+            <Route path="/PlanDefinition/:id/:tab" element={<PlanDefinitionPage />} />
+            <Route path="/PlanDefinition/:id" element={<PlanDefinitionPage />} />
             <Route path="/Questionnaire/:id/:tab" element={<QuestionnairePage />} />
             <Route path="/Questionnaire/:id" element={<QuestionnairePage />} />
             <Route path="/Task/:id" element={<TaskPage />} />

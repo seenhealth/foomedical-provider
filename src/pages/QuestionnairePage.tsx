@@ -31,7 +31,6 @@ export function QuestionnairePage(): JSX.Element {
   function onSubmit(newResource: Questionnaire): void {
     medplum
       .updateResource(newResource)
-      .then(() => medplum.get<Questionnaire>(medplum.fhirUrl('Questionnaire', id), { cache: 'reload' }))
       .then(() => toast.success('Success'))
       .catch((err) => toast.error(normalizeErrorString(err)));
   }
