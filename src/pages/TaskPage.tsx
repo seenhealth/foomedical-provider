@@ -1,18 +1,16 @@
-import { getReferenceString } from '@medplum/core';
 import { Practitioner } from '@medplum/fhirtypes';
 import { Document, MedplumLink, useMedplum, useMedplumProfile } from '@medplum/react';
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export function TaskPage(): JSX.Element {
-  const navigate = useNavigate();
   const { id, tab } = useParams() as {
     id: string;
     tab: string;
   };
   const medplum = useMedplum();
   const profile = useMedplumProfile() as Practitioner;
-  const tasks = medplum.searchResources('Task', 'owner=' + getReferenceString(profile)).read();
+  const tasks = medplum.searchResources('Task').read();
   const currIndex = tasks.findIndex((task) => task.id === id) ?? 0;
   const task = tasks[currIndex];
   const previous = currIndex > 0 ? tasks[currIndex - 1] : undefined;

@@ -39,3 +39,41 @@ table.foo-table > tbody > tr > td {
 table.foo-table > tbody > tr > td {
   border-top: 0.1px solid var(--medplum-gray-400);
 }
+
+/* Missing status margin - to be removed */
+.medplum-status {
+  margin: 0 4px;
+}
+
+/* Missing status - to be removed */
+.medplum-status-in-progress {
+  background-color: var(--medplum-green-50);
+  border: 0.01px solid var(--medplum-green-300);
+  color: var(--medplum-green-800);
+}
+
+/*
+
+Use "priority" as status
+
+Code	Display	Definition
+routine	Routine	The request has normal priority.
+urgent	Urgent	The request should be actioned promptly - higher priority than routine.
+asap	ASAP	The request should be actioned as soon as possible - higher priority than urgent.
+stat	STAT	The request should be actioned immediately - highest possible priority. E.g. an emergency.
+
+*/
+
+.medplum-status-routine {
+  background-color: var(--medplum-gray-50);
+  border: 0.01px solid var(--medplum-gray-500);
+  color: var(--medplum-gray-800);
+}
+
+.medplum-status-urgent,
+.medplum-status-asap,
+.medplum-status-stat {
+  background-color: var(--medplum-red-50);
+  border: 0.01px solid var(--medplum-red-300);
+  color: var(--medplum-red-800);
+}

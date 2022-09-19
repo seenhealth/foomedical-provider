@@ -1,33 +1,10 @@
-import { formatGivenName, getReferenceString } from '@medplum/core';
-import { HumanName, Patient, Practitioner } from '@medplum/fhirtypes';
-import { Avatar, Button, Document, HumanNameDisplay, useMedplum, useMedplumProfile } from '@medplum/react';
+import { formatGivenName } from '@medplum/core';
+import { HumanName, Patient, Practitioner, Reference, Task } from '@medplum/fhirtypes';
+import { Button, Document, ResourceBadge, StatusBadge, useMedplum, useMedplumProfile } from '@medplum/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import './HomePage.css';
-
-const patients: Patient[] = [
-  {
-    resourceType: 'Patient',
-    name: [{ given: ['Tom'], family: 'Smith' }],
-    photo: [{ url: '/people/pexels-photo-220453-300.jpg' }],
-  },
-  {
-    resourceType: 'Patient',
-    name: [{ given: ['Alice'], family: 'Li' }],
-    photo: [{ url: '/people/pexels-photo-415829-300.jpg' }],
-  },
-  {
-    resourceType: 'Patient',
-    name: [{ given: ['Karen'], family: 'Washington' }],
-    photo: [{ url: '/people/pexels-photo-5491144-300.jpg' }],
-  },
-  {
-    resourceType: 'Patient',
-    name: [{ given: ['Tom'], family: 'Smith' }],
-    photo: [{ url: '/people/pexels-photo-7275385-300.jpg' }],
-  },
-];
 
 export function HomePage(): JSX.Element {
   const navigate = useNavigate();
@@ -36,39 +13,105 @@ export function HomePage(): JSX.Element {
   const tasks = medplum.searchResources('Task').read();
 
   return (
-    <>
-      <Document>
-        <h1>Welcome {formatGivenName(profile.name?.[0] as HumanName)}</h1>
-      </Document>
-      {tasks?.map((task, index) => (
-        <Document key={task.id}>
-          <div className="task-details" style={{ display: 'flex', flexDirection: 'row' }}>
-            <div
-              className="task-patient-details"
-              style={{
-                width: 120,
-                display: 'flex',
-                flexDirection: 'column',
-                textAlign: 'center',
-              }}
-            >
-              <Avatar src={patients[index % 4].photo?.[0]?.url} size="large" color="#f80" />
-              <HumanNameDisplay value={patients[index % 4].name?.[0] as HumanName} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <pre style={{ fontSize: 9 }}>{JSON.stringify(task, null, 2)}</pre>
-              <hr />
-              <div className="task-actions">
-                <Button primary={true} onClick={() => navigate(`/Task/${task.id}`)}>
-                  Review
-                </Button>
-                <Button primary={true}>Schedule</Button>
-                <Button primary={true}>Reassign</Button>
-              </div>
-            </div>
-          </div>
-        </Document>
-      ))}
-    </>
+    <Document width={1200}>
+      <h1>Welcome {formatGivenName(profile.name?.[0] as HumanName)}</h1>
+      <table className="foo-table">
+        <tbody>
+          {tasks.map((task) => (
+            <tr>
+              <td>
+                <ResourceBadge value={task.for as Reference<Patient>} />
+              </td>
+              <td>{getTaskType(task)}</td>
+              <td>{task.description}</td>
+              <td>
+                <StatusBadge status={task.status as string} />
+                {task.priority && <StatusBadge status={task.priority as string} />}
+              </td>
+              <td>
+                {getTaskActions(task).map((action) => (
+                  <Button size="small" primary={action.primary} onClick={() => navigate(action.href)}>
+                    {action.label}
+                  </Button>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Document>
   );
+}
+
+/*
+
+| Task                                  | Actions                                  | Data Model                          |
+| ------------------------------------- | ---------------------------------------- | ----------------------------------- |
+| Schedule a Patient Visit              | Schedule, Reassign                       | Task.focus -> Appointment           |
+| Request Completion of a Questionnaire | Send to Patient, Send Reminder, Reassign | Task.focus -> Questionnaire         |
+| Order Lab                             | Order                                    | Task.focus -> ServiceRequest        |
+|                                       |                                          | ServiceRequest.code.system = LOINC  |
+| Review Lab                            | Review Report, Reassign                  | Task.focus -> DiagnosticReport.     |
+| Order Imaging Study Order, Review,    | Reassign                                 | Task.focus -> ServiceRequestRequest |
+|                                       |                                          | ServiceRequest.code.sysetm = SNOMED |
+| Review Imaging                        | Review                                   | Task.focus -> Imaging Study         |
+
+*/
+
+function getTaskType(task: Task): string {
+  const ref = task.focus?.reference;
+  if (ref) {
+    if (ref.startsWith('Appointment')) {
+      return 'Schedule a Patient Visit';
+    }
+    if (ref.startsWith('Questionnaire')) {
+      return 'Request Completion of a Questionnaire';
+    }
+    if (ref.startsWith('ServiceRequest')) {
+      return 'Order Lab';
+    }
+    if (ref.startsWith('DiagnosticReport')) {
+      return 'Review Lab';
+    }
+    if (ref.startsWith('ImagingStudy')) {
+      return 'Review Imaging';
+    }
+  }
+  return 'Task';
+}
+
+function getTaskActions(task: Task): { label: string; href: string; primary?: boolean }[] {
+  switch (getTaskType(task)) {
+    case 'Schedule a Patient Visit':
+      return [
+        { label: 'Schedule', href: `/Task/${task.id}` },
+        { label: 'Reassign', href: `/Task/${task.id}` },
+      ];
+    case 'Request Completion of a Questionnaire':
+      return [
+        { label: 'Send to Patient', href: `/Task/${task.id}`, primary: true },
+        { label: 'Send reminder', href: `/Task/${task.id}` },
+        { label: 'Reassign', href: `/Task/${task.id}` },
+      ];
+    case 'Order Lab':
+      return [
+        { label: 'Order', href: `/Task/${task.id}`, primary: true },
+        { label: 'Reassign', href: `/Task/${task.id}` },
+      ];
+    case 'Review Lab':
+      return [
+        { label: 'Review', href: `/Task/${task.id}`, primary: true },
+        { label: 'Reassign', href: `/Task/${task.id}` },
+      ];
+    case 'Review Imaging':
+      return [
+        { label: 'Review', href: `/Task/${task.id}`, primary: true },
+        { label: 'Reassign', href: `/Task/${task.id}` },
+      ];
+    default:
+      return [
+        { label: 'Review', href: `/Task/${task.id}`, primary: true },
+        { label: 'Reassign', href: `/Task/${task.id}` },
+      ];
+  }
 }
