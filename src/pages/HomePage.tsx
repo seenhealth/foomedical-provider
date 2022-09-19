@@ -33,7 +33,7 @@ export function HomePage(): JSX.Element {
   const navigate = useNavigate();
   const medplum = useMedplum();
   const profile = useMedplumProfile() as Practitioner;
-  const tasks = medplum.searchResources('Task', 'owner=' + getReferenceString(profile)).read();
+  const tasks = medplum.searchResources('Task').read();
 
   return (
     <>
