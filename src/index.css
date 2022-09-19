@@ -20,5 +20,22 @@ body {
 
 .medplum-timeline .medplum-timeline-item-title > a {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: bold;
+}
+
+table.foo-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.foo-table > thead > tr > th,
+table.foo-table > tbody > tr > td {
+  border-bottom: 0.1px solid var(--medplum-gray-400);
+  padding: 8px 6px;
+  color: rgb(73, 80, 87);
+  font-size: 14px;
+}
+
+table.foo-table > tbody > tr > td {
+  border-top: 0.1px solid var(--medplum-gray-400);
 }

@@ -1,41 +1,47 @@
-import { formatSearchQuery, parseSearchDefinition, SearchRequest } from '@medplum/core';
-import { Button, Document, Loading, MemoizedSearchControl, useMedplum } from '@medplum/react';
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { formatDateTime } from '@medplum/core';
+import { Button, Document, useMedplum } from '@medplum/react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function FormsList(): JSX.Element {
   const medplum = useMedplum();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [search, setSearch] = useState<SearchRequest>();
-
-  useEffect(() => {
-    const newSearch = parseSearchDefinition('Questionnaire?' + location.search);
-    newSearch.fields = ['title', 'publisher', '_lastUpdated'];
-    setSearch(newSearch);
-  }, [medplum, location]);
-
-  if (!search) {
-    return <Loading />;
-  }
+  const forms = medplum.searchResources('Questionnaire').read();
 
   return (
     <Document>
-      <h2>Forms</h2>
-      <MemoizedSearchControl
-        hideToolbar={true}
-        hideFilters={true}
-        checkboxesEnabled={false}
-        search={search}
-        userConfig={medplum.getUserConfiguration()}
-        onClick={(e) => navigate(`/${e.resource.resourceType}/${e.resource.id}`)}
-        onAuxClick={(e) => window.open(`/${e.resource.resourceType}/${e.resource.id}`, '_blank')}
-        onChange={(e) => {
-          navigate(`/${search.resourceType}${formatSearchQuery(e.definition)}`);
-        }}
-        onNew={() => navigate(`/${search.resourceType}/new`)}
-      />
-      <div>
+      <h1>Forms</h1>
+      <table className="foo-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Publisher</th>
+            <th>Last Updated</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {forms.map((form) => (
+            <tr>
+              <td>{form.title}</td>
+              <td>{form.publisher}</td>
+              <td>{formatDateTime(form.meta?.lastUpdated)}</td>
+              <td>
+                <Button size="small" primary={true} onClick={() => navigate(`/Questionnaire/${form.id}`)}>
+                  View
+                </Button>
+                <Button size="small" primary={true} onClick={() => navigate(`/Questionnaire/${form.id}/editor`)}>
+                  Edit
+                </Button>
+                <Button size="small" primary={true} onClick={() => navigate(`/Questionnaire/${form.id}/assign`)}>
+                  Assign
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ marginTop: 50 }}>
         <Button primary={true}>New</Button>
         <Button primary={true}>Import</Button>
       </div>

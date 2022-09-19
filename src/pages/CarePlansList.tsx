@@ -1,41 +1,55 @@
-import { formatSearchQuery, parseSearchDefinition, SearchRequest } from '@medplum/core';
-import { Button, Document, Loading, MemoizedSearchControl, useMedplum } from '@medplum/react';
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { formatDateTime } from '@medplum/core';
+import { Button, Document, useMedplum } from '@medplum/react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function CarePlansList(): JSX.Element {
   const medplum = useMedplum();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [search, setSearch] = useState<SearchRequest>();
-
-  useEffect(() => {
-    const newSearch = parseSearchDefinition('PlanDefinition?' + location.search);
-    newSearch.fields = ['title', 'publisher', '_lastUpdated'];
-    setSearch(newSearch);
-  }, [medplum, location]);
-
-  if (!search) {
-    return <Loading />;
-  }
+  const planDefinitions = medplum.searchResources('PlanDefinition').read();
 
   return (
     <Document>
-      <h2>Care Plans</h2>
-      <MemoizedSearchControl
-        hideToolbar={true}
-        hideFilters={true}
-        checkboxesEnabled={false}
-        search={search}
-        userConfig={medplum.getUserConfiguration()}
-        onClick={(e) => navigate(`/${e.resource.resourceType}/${e.resource.id}`)}
-        onAuxClick={(e) => window.open(`/${e.resource.resourceType}/${e.resource.id}`, '_blank')}
-        onChange={(e) => {
-          navigate(`/${search.resourceType}${formatSearchQuery(e.definition)}`);
-        }}
-        onNew={() => navigate(`/${search.resourceType}/new`)}
-      />
-      <div>
+      <h1>Care Plans</h1>
+      <table className="foo-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Publisher</th>
+            <th>Last Updated</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {planDefinitions.map((planDefinition) => (
+            <tr>
+              <td>{planDefinition.title}</td>
+              <td>{planDefinition.publisher}</td>
+              <td>{formatDateTime(planDefinition.meta?.lastUpdated)}</td>
+              <td>
+                <Button size="small" primary={true} onClick={() => navigate(`/PlanDefinition/${planDefinition.id}`)}>
+                  View
+                </Button>
+                <Button
+                  size="small"
+                  primary={true}
+                  onClick={() => navigate(`/PlanDefinition/${planDefinition.id}/editor`)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="small"
+                  primary={true}
+                  onClick={() => navigate(`/PlanDefinition/${planDefinition.id}/assign`)}
+                >
+                  Assign
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ marginTop: 50 }}>
         <Button primary={true}>New</Button>
         <Button primary={true}>Import</Button>
       </div>
