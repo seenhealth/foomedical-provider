@@ -14,10 +14,6 @@ body {
   font-size: 15px;
 }
 
-.medplum-avatar {
-  margin: 10px auto;
-}
-
 .medplum-timeline-item {
   max-width: 900px !important;
 }

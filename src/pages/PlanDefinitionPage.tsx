@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './PatientHeader.css';
 import './PatientPage.css';
+import { PlanDefinitionApplyForm } from './PlanDefinitionApplyForm';
 
 export function PlanDefinitionPage(): JSX.Element {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ export function PlanDefinitionPage(): JSX.Element {
       <TabList value={tab || defaultTab} onChange={(newTab) => navigate(`/PlanDefinition/${id}/${newTab}`)}>
         <Tab name="preview" label="Preview" />
         <Tab name="editor" label="Editor" />
+        <Tab name="assign" label="Assign" />
       </TabList>
       <Document>
         <TabSwitch value={tab || defaultTab}>
@@ -62,6 +64,10 @@ export function PlanDefinitionPage(): JSX.Element {
           <TabPanel name="editor">
             <h2>Editor</h2>
             <PlanDefinitionBuilder value={planDefinition} onSubmit={onSubmit} />
+          </TabPanel>
+          <TabPanel name="assign">
+            <h2>Assign</h2>
+            <PlanDefinitionApplyForm planDefinition={planDefinition} />
           </TabPanel>
         </TabSwitch>
       </Document>

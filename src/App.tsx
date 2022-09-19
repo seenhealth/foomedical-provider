@@ -88,6 +88,7 @@ export function App(): JSX.Element | null {
             <Route path="/Questionnaire/:id" element={<QuestionnairePage />} />
             <Route path="/Task/:id" element={<TaskPage />} />
             <Route path="/:resourceType/:id" element={<ResourcePage />} />
+            <Route path="/:resourceType/:id/:tab" element={<ResourcePage />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>
