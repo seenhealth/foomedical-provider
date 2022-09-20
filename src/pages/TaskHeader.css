@@ -1,0 +1,9 @@
+.foo-task-header {
+  display: flex;
+  background: #cce5ff;
+  border: 1px solid #b8daff;
+  border-radius: 8;
+  margin: 8;
+  padding: 8;
+  text-align: center;
+}

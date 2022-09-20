@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { ReassignDialog } from './ReassignDialog';
 
 import './HomePage.css';
+import { getTaskActions, getTaskType } from './utils';
 
 export function HomePage(): JSX.Element {
   const navigate = useNavigate();
@@ -13,13 +14,14 @@ export function HomePage(): JSX.Element {
   const profile = useMedplumProfile() as Practitioner;
   const [reassignTask, setReassignTask] = useState<Task>();
 
-  // Sort tasks by:
-  // 1) Patient
-  // 2) Priority
   const tasks = medplum
     .searchResources('Task')
     .read()
+    .filter((task) => task.for?.reference?.startsWith('Patient/'))
     .sort((a, b) => {
+      // Sort tasks by:
+      // 1) Patient
+      // 2) Priority
       const aPatient = a.for?.reference || '';
       const bPatient = b.for?.reference || '';
       if (aPatient !== bPatient) {
@@ -79,61 +81,4 @@ export function HomePage(): JSX.Element {
       />
     </>
   );
-}
-
-/*
-
-| Task                                  | Actions                                  | Data Model                          |
-| ------------------------------------- | ---------------------------------------- | ----------------------------------- |
-| Schedule a Patient Visit              | Schedule, Reassign                       | Task.focus -> Appointment           |
-| Request Completion of a Questionnaire | Send to Patient, Send Reminder, Reassign | Task.focus -> Questionnaire         |
-| Order Lab                             | Order                                    | Task.focus -> ServiceRequest        |
-|                                       |                                          | ServiceRequest.code.system = LOINC  |
-| Review Lab                            | Review Report, Reassign                  | Task.focus -> DiagnosticReport.     |
-| Order Imaging Study Order, Review,    | Reassign                                 | Task.focus -> ServiceRequestRequest |
-|                                       |                                          | ServiceRequest.code.sysetm = SNOMED |
-| Review Imaging                        | Review                                   | Task.focus -> Imaging Study         |
-
-*/
-
-function getTaskType(task: Task): string {
-  const ref = task.focus?.reference;
-  if (ref) {
-    if (ref.startsWith('Appointment')) {
-      return 'Schedule a Patient Visit';
-    }
-    if (ref.startsWith('Questionnaire')) {
-      return 'Request Completion of a Questionnaire';
-    }
-    if (ref.startsWith('ServiceRequest')) {
-      return 'Order Lab';
-    }
-    if (ref.startsWith('DiagnosticReport')) {
-      return 'Review Lab';
-    }
-    if (ref.startsWith('ImagingStudy')) {
-      return 'Review Imaging';
-    }
-  }
-  return 'Task';
-}
-
-function getTaskActions(task: Task): { label: string; href: string; primary?: boolean; onClick?: () => void }[] {
-  switch (getTaskType(task)) {
-    case 'Schedule a Patient Visit':
-      return [{ label: 'Schedule', href: `/Task/${task.id}` }];
-    case 'Request Completion of a Questionnaire':
-      return [
-        { label: 'Send to Patient', href: `/Task/${task.id}`, primary: true },
-        { label: 'Send reminder', href: `/Task/${task.id}` },
-      ];
-    case 'Order Lab':
-      return [{ label: 'Order', href: `/Task/${task.id}`, primary: true }];
-    case 'Review Lab':
-      return [{ label: 'Review', href: `/Task/${task.id}`, primary: true }];
-    case 'Review Imaging':
-      return [{ label: 'Review', href: `/Task/${task.id}`, primary: true }];
-    default:
-      return [{ label: 'Review', href: `/Task/${task.id}`, primary: true }];
-  }
 }

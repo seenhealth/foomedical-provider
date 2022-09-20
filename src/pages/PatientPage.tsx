@@ -1,9 +1,10 @@
 import { DiagnosticReport, Patient, ServiceRequest } from '@medplum/fhirtypes';
 import { Document, Loading, Tab, TabList, TabPanel, TabSwitch, useMedplum } from '@medplum/react';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PatientHeader } from './PatientHeader';
 import './PatientPage.css';
+import { TaskHeader } from './TaskHeader';
 
 interface PatientGraphQLResponse {
   data: {
@@ -15,11 +16,14 @@ interface PatientGraphQLResponse {
 
 export function PatientPage(): JSX.Element {
   const navigate = useNavigate();
-  const { id, tab } = useParams() as {
-    id: string;
-    tab: string;
-  };
+  const params = useParams() as { id: string; tab: string };
+  const id = params.id;
+
+  const [searchParams] = useSearchParams();
+  const taskId = searchParams.get('task');
+
   const medplum = useMedplum();
+
   const [response, setResponse] = useState<PatientGraphQLResponse>();
 
   useEffect(() => {
@@ -75,12 +79,14 @@ export function PatientPage(): JSX.Element {
   }
 
   const { patient, orders, reports } = response.data;
-  const defaultTab = 'overview';
+
+  const tab = resolveTab(params.tab);
 
   return (
     <>
+      {taskId && <TaskHeader taskId={taskId} />}
       <PatientHeader patient={patient} />
-      <TabList value={tab || defaultTab} onChange={(newTab) => navigate(`/Patient/${id}/${newTab}`)}>
+      <TabList value={tab} onChange={(newTab) => navigate(`/Patient/${id}/${newTab}`)}>
         <Tab name="overview" label="Overview" />
         <Tab name="visits" label="Visits" />
         <Tab name="labreports" label="Labs & Imaging" />
@@ -88,7 +94,7 @@ export function PatientPage(): JSX.Element {
         <Tab name="forms" label="Forms" />
       </TabList>
       <Document>
-        <TabSwitch value={tab || defaultTab}>
+        <TabSwitch value={tab}>
           <TabPanel name="overview">
             <h2>Overview</h2>
             <ul>
@@ -104,7 +110,7 @@ export function PatientPage(): JSX.Element {
             </ul>
           </TabPanel>
           <TabPanel name="labreports">
-            <h2>Labs & Imaging</h2>
+            <h2>Labs &amp; Imaging</h2>
             <ul>
               <li>DiagnosticReports</li>
               <li>ImagingStudys</li>
@@ -132,10 +138,26 @@ export function PatientPage(): JSX.Element {
   );
 }
 
-function formatDate(date: string | undefined): string {
-  if (!date) {
-    return '';
+function resolveTab(input: string): string {
+  if (!input) {
+    return 'overview';
   }
-  const d = new Date(date);
-  return d.toLocaleDateString();
+  if (input === 'Appointment') {
+    return 'visits';
+  }
+  if (input === 'DiagnosticReport' || input === 'ImagingStudy') {
+    return 'labreports';
+  }
+  if (input === 'CarePlan' || input === 'RequestGroup') {
+    return 'careplans';
+  }
+  if (
+    input === 'Media' ||
+    input === 'DocumentReference' ||
+    input === 'Questionnaire' ||
+    input === 'QuestionnaireResponse'
+  ) {
+    return 'forms';
+  }
+  return input;
 }
