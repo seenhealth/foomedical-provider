@@ -42,6 +42,10 @@ export function PatientPage(): JSX.Element {
           city,
           state
         }
+        photo {
+          contentType
+          url
+        }
       },
       orders: ServiceRequestList(subject: "Patient/${id}") {
         resourceType,
