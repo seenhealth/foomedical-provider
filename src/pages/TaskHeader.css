@@ -1,9 +1,15 @@
-.foo-task-header {
+.task-header-container {
+  margin: 0;
+  padding: 4px;
+  background: white;
+}
+
+.task-header {
   display: flex;
   background: #cce5ff;
   border: 1px solid #b8daff;
-  border-radius: 8;
-  margin: 8;
-  padding: 8;
+  border-radius: 8px;
+  margin: 8px;
+  padding: 8px;
   text-align: center;
 }

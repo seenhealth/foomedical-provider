@@ -41,7 +41,7 @@ export function getTaskActions(task: Task): { label: string; href: string; prima
   const href = getTaskHref(task);
   switch (getTaskType(task)) {
     case 'Schedule a Patient Visit':
-      return [{ label: 'Schedule', href }];
+      return [{ label: 'Schedule', href, primary: true }];
     case 'Request Completion of a Questionnaire':
       return [
         { label: 'Send to Patient', href, primary: true },
@@ -59,5 +59,8 @@ export function getTaskActions(task: Task): { label: string; href: string; prima
 }
 
 export function getTaskHref(task: Task): string {
-  return `/${task.for?.reference}/${task.focus?.reference}?task=${task.id}`;
+  if (task.for && task.focus) {
+    return `/${task.for?.reference}/${task.focus?.reference}?task=${task.id}`;
+  }
+  return `/Task/${task.id}`;
 }

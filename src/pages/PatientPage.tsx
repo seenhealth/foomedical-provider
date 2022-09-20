@@ -86,7 +86,7 @@ export function PatientPage(): JSX.Element {
     <>
       {taskId && <TaskHeader taskId={taskId} />}
       <PatientHeader patient={patient} />
-      <TabList value={tab} onChange={(newTab) => navigate(`/Patient/${id}/${newTab}`)}>
+      <TabList value={tab} onChange={(newTab) => navigate(`/Patient/${id}/${newTab}?task=${taskId}`)}>
         <Tab name="overview" label="Overview" />
         <Tab name="visits" label="Visits" />
         <Tab name="labreports" label="Labs & Imaging" />

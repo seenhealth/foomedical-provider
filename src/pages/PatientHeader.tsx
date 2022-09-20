@@ -2,6 +2,7 @@ import { calculateAgeString, formatAddress, formatHumanName } from '@medplum/cor
 import { HumanName, Patient, Reference } from '@medplum/fhirtypes';
 import { Avatar, Scrollable, useResource } from '@medplum/react';
 import React from 'react';
+
 import './PatientHeader.css';
 
 export interface PatientHeaderProps {

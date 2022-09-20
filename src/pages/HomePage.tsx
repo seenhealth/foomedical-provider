@@ -4,36 +4,16 @@ import { Button, Document, ResourceBadge, StatusBadge, useMedplum, useMedplumPro
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ReassignDialog } from './ReassignDialog';
+import { getTaskActions, getTaskType } from './utils';
 
 import './HomePage.css';
-import { getTaskActions, getTaskType } from './utils';
 
 export function HomePage(): JSX.Element {
   const navigate = useNavigate();
   const medplum = useMedplum();
   const profile = useMedplumProfile() as Practitioner;
   const [reassignTask, setReassignTask] = useState<Task>();
-
-  const tasks = medplum
-    .searchResources('Task')
-    .read()
-    .filter((task) => task.for?.reference?.startsWith('Patient/'))
-    .sort((a, b) => {
-      // Sort tasks by:
-      // 1) Patient
-      // 2) Priority
-      const aPatient = a.for?.reference || '';
-      const bPatient = b.for?.reference || '';
-      if (aPatient !== bPatient) {
-        return aPatient < bPatient ? -1 : 1;
-      }
-      const aPriority = a.priority || '';
-      const bPriority = b.priority || '';
-      if (aPriority !== bPriority) {
-        return aPriority < bPriority ? -1 : 1;
-      }
-      return 0;
-    });
+  const tasks = medplum.searchResources('Task', '_sort=for').read();
 
   return (
     <>
