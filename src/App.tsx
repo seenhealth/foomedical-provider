@@ -34,6 +34,7 @@ export function App(): JSX.Element | null {
       {
         title: 'Menu',
         link: [
+          { name: 'Work List', target: '/' },
           { name: 'Patients', target: '/patients' },
           { name: 'Visits', target: '/visits' },
           { name: 'Forms', target: '/forms' },
