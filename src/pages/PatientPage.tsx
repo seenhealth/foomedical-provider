@@ -83,9 +83,9 @@ export function PatientPage(): JSX.Element {
       <TabList value={tab || defaultTab} onChange={(newTab) => navigate(`/Patient/${id}/${newTab}`)}>
         <Tab name="overview" label="Overview" />
         <Tab name="visits" label="Visits" />
-        <Tab name="labreports" label="Lab Reports" />
+        <Tab name="labreports" label="Labs & Imaging" />
         <Tab name="careplans" label="Care Plans" />
-        <Tab name="documents" label="Documents" />
+        <Tab name="forms" label="Forms" />
       </TabList>
       <Document>
         <TabSwitch value={tab || defaultTab}>
@@ -104,9 +104,10 @@ export function PatientPage(): JSX.Element {
             </ul>
           </TabPanel>
           <TabPanel name="labreports">
-            <h2>Lab Reports</h2>
+            <h2>Labs & Imaging</h2>
             <ul>
               <li>DiagnosticReports</li>
+              <li>ImagingStudys</li>
             </ul>
           </TabPanel>
           <TabPanel name="careplans">
@@ -116,7 +117,7 @@ export function PatientPage(): JSX.Element {
               <li>RequestGroups</li>
             </ul>
           </TabPanel>
-          <TabPanel name="documents">
+          <TabPanel name="forms">
             <h2>Documents</h2>
             <ul>
               <li>Media</li>
