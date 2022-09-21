@@ -3,7 +3,6 @@ import { ErrorBoundary, Header, Loading, useMedplum } from '@medplum/react';
 import React, { Suspense } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { CarePlansList } from './pages/CarePlansList';
 import { FormsList } from './pages/FormsList';
 import { HomePage } from './pages/HomePage';
@@ -17,6 +16,8 @@ import { ResourcePage } from './pages/ResourcePage';
 import { SchedulePage } from './pages/SchedulePage';
 import { SignInPage } from './pages/SignInPage';
 import { TaskPage } from './pages/TaskPage';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 export function App(): JSX.Element | null {
   const navigate = useNavigate();
