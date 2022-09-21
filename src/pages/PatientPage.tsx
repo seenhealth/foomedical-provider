@@ -4,6 +4,7 @@ import {
   CodeableConcept,
   DiagnosticReport,
   Patient,
+  RequestGroup,
   Resource,
   ResourceType,
   ServiceRequest,
@@ -15,6 +16,7 @@ import {
   Document,
   Loading,
   MedplumLink,
+  RequestGroupDisplay,
   ResourceTable,
   StatusBadge,
   Tab,
@@ -36,6 +38,7 @@ interface PatientGraphQLResponse {
     appointments: Appointment[];
     orders: ServiceRequest[];
     reports: DiagnosticReport[];
+    requestGroups: RequestGroup[];
   };
 }
 
@@ -87,6 +90,14 @@ export function PatientPage(): JSX.Element {
         id,
         meta { lastUpdated },
         code { text }
+      },
+      requestGroups: RequestGroupList(subject: "Patient/${id}") {
+        resourceType,
+        id,
+        status,
+        meta { lastUpdated },
+        code { text },
+        action { id, title, resource { reference } }
       }
     }`;
     medplum.graphql(query).then(setResponse);
@@ -96,7 +107,7 @@ export function PatientPage(): JSX.Element {
     return <Loading />;
   }
 
-  const { patient, appointments, orders, reports } = response.data;
+  const { patient, appointments, orders, reports, requestGroups } = response.data;
 
   const allResources = [...appointments, ...orders, ...reports];
   allResources.sort((a, b) => (a.meta?.lastUpdated as string).localeCompare(b.meta?.lastUpdated as string));
@@ -126,7 +137,7 @@ export function PatientPage(): JSX.Element {
             <LabAndImagingTab patient={patient} orders={orders} resource={resource} />
           </TabPanel>
           <TabPanel name="careplans">
-            <CarePlansTab />
+            <CarePlansTab requestGroups={requestGroups} />
           </TabPanel>
           <TabPanel name="forms">
             <FormsTab />
@@ -334,14 +345,23 @@ function LabAndImagingTab({
   );
 }
 
-function CarePlansTab(): JSX.Element {
+function CarePlansTab({ requestGroups }: { requestGroups: RequestGroup[] }): JSX.Element {
   return (
     <>
+      <br />
       <h2>Care Plans</h2>
-      <ul>
-        <li>CarePlans</li>
-        <li>RequestGroups</li>
-      </ul>
+      {requestGroups.map((requestGroup) => (
+        <>
+          <h3>{requestGroup.code?.text}</h3>
+          <RequestGroupDisplay
+            value={requestGroup}
+            onStart={() => console.log('Start task')}
+            onEdit={() => console.log('Edit task')}
+          />
+        </>
+      ))}
+      <br />
+      <br />
     </>
   );
 }
