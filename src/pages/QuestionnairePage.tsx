@@ -1,4 +1,4 @@
-import { normalizeErrorString } from '@medplum/core';
+import { formatDateTime, normalizeErrorString } from '@medplum/core';
 import { Questionnaire } from '@medplum/fhirtypes';
 import {
   Avatar,
@@ -39,13 +39,15 @@ export function QuestionnairePage(): JSX.Element {
     <>
       <Scrollable className="medplum-surface" height={100}>
         <div className="medplum-patient-header">
-          <Avatar alt="Q" size="large" color="#888" />
           <div className="medplum-patient-header-details">
             <div>
               <strong>Title:</strong> {questionnaire.title}
             </div>
             <div>
               <strong>Publisher:</strong> {questionnaire.publisher}
+            </div>
+            <div>
+              <strong>Last Updated:</strong> {formatDateTime(questionnaire.meta?.lastUpdated)}
             </div>
           </div>
         </div>

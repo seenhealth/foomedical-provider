@@ -262,7 +262,7 @@ function resolveTab(input: string): string {
   if (input === 'Appointment') {
     return 'visits';
   }
-  if (input === 'DiagnosticReport' || input === 'ImagingStudy') {
+  if (input === 'DiagnosticReport' || input === 'ImagingStudy' || input === 'ServiceRequest') {
     return 'labreports';
   }
   if (input === 'CarePlan' || input === 'RequestGroup') {
