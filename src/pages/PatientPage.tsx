@@ -220,7 +220,7 @@ function LabAndImagingTab({
         return (
           <>
             <h2>Labs &amp; Imaging</h2>
-            <embed src={resource.presentedForm[0].url} width="850" height="600" type="application/pdf"></embed>
+            <iframe src={resource.presentedForm[0].url} width="850" height="600"></iframe>
             <hr />
             <Button primary={true} size="large">
               Approve
