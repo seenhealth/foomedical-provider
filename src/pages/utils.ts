@@ -25,7 +25,7 @@ export function getTaskType(task: Task): string {
       return 'Request Completion of a Questionnaire';
     }
     if (ref.startsWith('ServiceRequest')) {
-      return 'Order Lab';
+      return 'Order';
     }
     if (ref.startsWith('DiagnosticReport')) {
       return 'Review Lab';
@@ -47,7 +47,7 @@ export function getTaskActions(task: Task): { label: string; href: string; prima
         { label: 'Send to Patient', href, primary: true },
         { label: 'Send reminder', href: `/Task/${task.id}` },
       ];
-    case 'Order Lab':
+    case 'Order':
       return [{ label: 'Order', href, primary: true }];
     case 'Review Lab':
       return [{ label: 'Review', href, primary: true }];

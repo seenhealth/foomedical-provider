@@ -40,6 +40,52 @@ table.foo-table > tbody > tr > td {
   border-top: 0.1px solid var(--medplum-gray-300);
 }
 
+.medplum-status-active,
+.medplum-status-arrived,
+.medplum-status-chcked-in,
+.medplum-status-draft,
+.medplum-status-in-progress,
+.medplum-status-preliminary,
+.medplum-status-proposed,
+.medplum-status-pending,
+.medplum-status-registered,
+.medplum-status-requested {
+  background-color: var(--medplum-blue-50);
+  border: 0.01px solid var(--medplum-blue-300);
+  color: var(--medplum-blue-800);
+}
+
+.medplum-status-on-hold {
+  background-color: var(--medplum-orange-50);
+  border: 0.01px solid var(--medplum-orange-300);
+  color: var(--medplum-orange-800);
+}
+
+.medplum-status-booked,
+.medplum-status-completed,
+.medplum-status-fulfilled {
+  background-color: var(--medplum-green-50);
+  border: 0.01px solid var(--medplum-green-300);
+  color: var(--medplum-green-800);
+}
+
+.medplum-status-cancelled,
+.medplum-status-noshow,
+.medplum-status-rejected,
+.medplum-status-revoked,
+.medplum-status-entered-in-error {
+  background-color: var(--medplum-red-50);
+  border: 0.01px solid var(--medplum-red-300);
+  color: var(--medplum-red-800);
+}
+
+.medplum-status-unknown,
+.medplum-status-waitlist {
+  background-color: var(--medplum-gray-50);
+  border: 0.01px solid var(--medplum-gray-500);
+  color: var(--medplum-gray-800);
+}
+
 /*
 
 Use "priority" as status
