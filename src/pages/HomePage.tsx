@@ -23,11 +23,11 @@ export function HomePage(): JSX.Element {
           <tbody>
             {tasks.map((task, taskIndex) => (
               <tr key={task.id}>
-                <td>
-                  {(taskIndex === 0 || task.for?.reference !== tasks[taskIndex - 1].for?.reference) && (
+                {isPatientVisible(tasks, taskIndex) && (
+                  <td rowSpan={getPatientRowSpan(tasks, taskIndex)} style={{ verticalAlign: 'top', paddingTop: 10 }}>
                     <ResourceBadge value={task.for as Reference<Patient>} />
-                  )}
-                </td>
+                  </td>
+                )}
                 <td>{getTaskType(task)}</td>
                 <td>{task.description}</td>
                 <td>
@@ -61,4 +61,20 @@ export function HomePage(): JSX.Element {
       />
     </>
   );
+}
+
+function isPatientVisible(tasks: Task[], index: number): boolean {
+  return index === 0 || tasks[index].for?.reference !== tasks[index - 1].for?.reference;
+}
+
+function getPatientRowSpan(tasks: Task[], index: number): number {
+  let count = 1;
+  for (let i = index + 1; i < tasks.length; i++) {
+    if (tasks[i].for?.reference === tasks[index].for?.reference) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  return count;
 }

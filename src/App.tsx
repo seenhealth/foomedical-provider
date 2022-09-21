@@ -60,7 +60,7 @@ export function App(): JSX.Element | null {
       />
       {profile && (
         <Header
-          bgColor="#202020"
+          bgColor="#134e4a"
           title="Foo Provider"
           onLogo={() => navigate('/')}
           onProfile={() => navigate(`/profile`)}
