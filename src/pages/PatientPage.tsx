@@ -15,6 +15,7 @@ import {
   Document,
   Loading,
   MedplumLink,
+  ResourceTable,
   StatusBadge,
   Tab,
   TabList,
@@ -67,8 +68,8 @@ export function PatientPage(): JSX.Element {
         resourceType,
         id,
         meta { lastUpdated },
-        serviceCategory { coding { code, display } },
-        serviceType { coding { code, display } },
+        serviceCategory { text, coding { code, display } },
+        serviceType { text, coding { code, display } },
         start,
         end,
         status
@@ -77,8 +78,9 @@ export function PatientPage(): JSX.Element {
         resourceType,
         id,
         meta { lastUpdated },
-        category { text },
-        code { text }
+        category { text, coding { code, display } },
+        code { text, coding { code, display } },
+        status
       },
       reports: DiagnosticReportList(subject: "Patient/${id}") {
         resourceType,
@@ -121,7 +123,7 @@ export function PatientPage(): JSX.Element {
             <VisitsTab appointments={appointments} />
           </TabPanel>
           <TabPanel name="labreports">
-            <LabAndImagingTab resource={resource} />
+            <LabAndImagingTab patient={patient} orders={orders} resource={resource} />
           </TabPanel>
           <TabPanel name="careplans">
             <CarePlansTab />
@@ -190,13 +192,28 @@ function VisitsTab({ appointments }: { appointments: Appointment[] }): JSX.Eleme
               </td>
             </tr>
           ))}
+          {appointments.length === 0 && (
+            <tr>
+              <td colSpan={4} style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                No appointments found
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </>
   );
 }
 
-function LabAndImagingTab({ resource }: { resource: Resource | undefined }): JSX.Element {
+function LabAndImagingTab({
+  patient,
+  orders,
+  resource,
+}: {
+  patient: Patient;
+  orders: ServiceRequest[];
+  resource: Resource | undefined;
+}): JSX.Element {
   if (resource) {
     if (resource.resourceType === 'DiagnosticReport') {
       if (resource.presentedForm) {
@@ -213,20 +230,106 @@ function LabAndImagingTab({ resource }: { resource: Resource | undefined }): JSX
       }
       return <DiagnosticReportDisplay value={resource} />;
     }
+    return (
+      <>
+        <h2>{getPropertyDisplayName(resource.resourceType)}</h2>
+        <ResourceTable ignoreMissingValues={true} value={resource} />
+        <hr style={{ margin: '20px 0' }} />
+        <Button primary={true} size="large">
+          Approve
+        </Button>
+      </>
+    );
   }
+  const activeOrders = orders.filter((order) => order.status !== 'completed');
+  const completedOrders = orders.filter((order) => order.status === 'completed');
   return (
     <>
       <h2>Labs &amp; Imaging</h2>
-      {resource ? (
-        <div>
-          <pre>{JSON.stringify(resource, null, 2)}</pre>
-        </div>
-      ) : (
-        <ul>
-          <li>DiagnosticReports</li>
-          <li>ImagingStudys</li>
-        </ul>
-      )}
+      <br />
+      <h3>Active</h3>
+      <table className="foo-table">
+        <thead>
+          <tr>
+            <th style={{ width: '20%' }}>Category</th>
+            <th style={{ width: '30%' }}>Code</th>
+            <th style={{ width: '25%' }}>Last Updated</th>
+            <th style={{ width: '15%' }}>Status</th>
+            <th style={{ width: '10%' }} />
+          </tr>
+        </thead>
+        <tbody>
+          {activeOrders.map((order) => (
+            <tr>
+              <td>
+                <CodeableConceptDisplay value={order.category?.[0] as CodeableConcept} />
+              </td>
+              <td>
+                <CodeableConceptDisplay value={order.code as CodeableConcept} />
+              </td>
+              <td>{formatDateTime(order.meta?.lastUpdated)}</td>
+              <td>
+                <StatusBadge status={order.status as string} />
+              </td>
+              <td>
+                <MedplumLink className="medplum-button" to={`/Patient/${patient.id}/${order.resourceType}/${order.id}`}>
+                  Review
+                </MedplumLink>
+              </td>
+            </tr>
+          ))}
+          {orders.length === 0 && (
+            <tr>
+              <td colSpan={4} style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                No orders found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <br />
+      <br />
+      <h3>Completed</h3>
+      <table className="foo-table">
+        <thead>
+          <tr>
+            <th style={{ width: '20%' }}>Category</th>
+            <th style={{ width: '30%' }}>Code</th>
+            <th style={{ width: '25%' }}>Last Updated</th>
+            <th style={{ width: '15%' }}>Status</th>
+            <th style={{ width: '10%' }} />
+          </tr>
+        </thead>
+        <tbody>
+          {completedOrders.map((order) => (
+            <tr>
+              <td>
+                <CodeableConceptDisplay value={order.category?.[0] as CodeableConcept} />
+              </td>
+              <td>
+                <CodeableConceptDisplay value={order.code as CodeableConcept} />
+              </td>
+              <td>{formatDateTime(order.meta?.lastUpdated)}</td>
+              <td>
+                <StatusBadge status={order.status as string} />
+              </td>
+              <td>
+                <MedplumLink className="medplum-button" to={`/Patient/${patient.id}/${order.resourceType}/${order.id}`}>
+                  Review
+                </MedplumLink>
+              </td>
+            </tr>
+          ))}
+          {orders.length === 0 && (
+            <tr>
+              <td colSpan={4} style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                No orders found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <br />
     </>
   );
 }

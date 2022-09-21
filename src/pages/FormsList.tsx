@@ -30,10 +30,10 @@ export function FormsList(): JSX.Element {
                 <Button size="small" primary={true} onClick={() => navigate(`/Questionnaire/${form.id}`)}>
                   View
                 </Button>
-                <Button size="small" primary={true} onClick={() => navigate(`/Questionnaire/${form.id}/editor`)}>
+                <Button size="small" onClick={() => navigate(`/Questionnaire/${form.id}/editor`)}>
                   Edit
                 </Button>
-                <Button size="small" primary={true} onClick={() => navigate(`/Questionnaire/${form.id}/assign`)}>
+                <Button size="small" onClick={() => navigate(`/Questionnaire/${form.id}/assign`)}>
                   Assign
                 </Button>
               </td>
