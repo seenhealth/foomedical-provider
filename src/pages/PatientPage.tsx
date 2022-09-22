@@ -241,6 +241,21 @@ function LabAndImagingTab({
       }
       return <DiagnosticReportDisplay value={resource} />;
     }
+    if (resource.resourceType === 'ImagingStudy') {
+      return (
+        <>
+          <h2>Labs &amp; Imaging</h2>
+          <Button>Open in DICOM Viewer...</Button>
+          <Button>View study details...</Button>
+          <hr />
+          <img src="/chest-xray.jpeg" />
+          <hr />
+          <Button primary={true} size="large">
+            Approve
+          </Button>
+        </>
+      );
+    }
     return (
       <>
         <h2>{getPropertyDisplayName(resource.resourceType)}</h2>
