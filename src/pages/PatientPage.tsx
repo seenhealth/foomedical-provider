@@ -248,7 +248,7 @@ function LabAndImagingTab({
           <Button>Open in DICOM Viewer...</Button>
           <Button>View study details...</Button>
           <hr />
-          <img src="/chest-xray.jpeg" />
+          <img src="/knee-mri.png" />
           <hr />
           <Button primary={true} size="large">
             Approve
