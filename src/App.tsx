@@ -16,6 +16,8 @@ import { ResourcePage } from './pages/ResourcePage';
 import { SchedulePage } from './pages/SchedulePage';
 import { SignInPage } from './pages/SignInPage';
 import { TaskPage } from './pages/TaskPage';
+import { CreateResourcePage } from './pages/CreateResourcePage';
+import { ResourceSearchPage } from './pages/ResourceSearchPage';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -90,6 +92,8 @@ export function App(): JSX.Element | null {
             <Route path="/Questionnaire/:id/:tab" element={<QuestionnairePage />} />
             <Route path="/Questionnaire/:id" element={<QuestionnairePage />} />
             <Route path="/Task/:id" element={<TaskPage />} />
+            <Route path="/:resourceType" element={<ResourceSearchPage />} />
+            <Route path="/:resourceType/new" element={<CreateResourcePage />} />
             <Route path="/:resourceType/:id" element={<ResourcePage />} />
             <Route path="/:resourceType/:id/:tab" element={<ResourcePage />} />
           </Routes>
