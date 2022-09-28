@@ -20,6 +20,7 @@ import { CreateResourcePage } from './pages/CreateResourcePage';
 import { ResourceSearchPage } from './pages/ResourceSearchPage';
 
 import 'react-toastify/dist/ReactToastify.css';
+import { ReportsPage } from './pages/ReportsPage';
 
 export function App(): JSX.Element | null {
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ export function App(): JSX.Element | null {
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/patients" element={<PatientsList />} />
+            <Route path="/reports" element={<ReportsPage />} />
             <Route path="/visits" element={<SchedulePage />} />
             <Route path="/forms" element={<FormsList />} />
             <Route path="/careplans" element={<CarePlansList />} />
