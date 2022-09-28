@@ -1,16 +1,19 @@
+import { stringify } from '@medplum/core';
 import { Button, Document, MedplumLink, ResourceBadge, useMedplum } from '@medplum/react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export function ReportsPage(): JSX.Element {
   const medplum = useMedplum();
   const navigate = useNavigate();
   const patients = medplum.search('Patient', '_summary=count').read();
   console.log(patients.total);
-  const diabeticPatients = medplum.search('Condition', 'clinical-status:contains=active&code=359642000').read();
-  //console.log('2');
-  const normalPregnancy = medplum.search('Condition', 'clinical-status:contains=active&code=72892002').read();
-  //console.log('3');
+  const hypertensivePatients = medplum
+    .search('Condition', 'clinical-status:contains=active&code=59621000&_summary=count')
+    .read();
+  const normalPregnancy = medplum
+    .search('Condition', 'clinical-status:contains=active&code=72892002&_summary=count')
+    .read();
 
   return (
     <Document>
@@ -21,18 +24,21 @@ export function ReportsPage(): JSX.Element {
             <th>Condition (SNOMED Code)</th>
             <th>Affected</th>
             <th>Total Patients</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Diabetes mellitus type 2 in nonobese (359642000)</td>
-            <td>{diabeticPatients.total}</td>
+            <td>Hypertensive patients (59621000)</td>
+            <td>
+              <Link to="/Condition?code=59621000">{hypertensivePatients.total}</Link>
+            </td>
             <td>{patients.total}</td>
           </tr>
           <tr>
             <td>Normal pregnancy (72892002)</td>
-            <td>{normalPregnancy.total}</td>
+            <td>
+              <Link to="/Condition?code=72892002">{normalPregnancy.total}</Link>
+            </td>
             <td>{patients.total}</td>
           </tr>
         </tbody>
