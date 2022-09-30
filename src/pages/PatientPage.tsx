@@ -122,6 +122,7 @@ export function PatientPage(): JSX.Element {
         <Tab name="overview" label="Overview" />
         <Tab name="visits" label="Visits" />
         <Tab name="labreports" label="Labs &amp; Imaging" />
+        <Tab name="medication" label="Medication" />
         <Tab name="careplans" label="Care Plans" />
         <Tab name="forms" label="Forms" />
       </TabList>
@@ -135,6 +136,9 @@ export function PatientPage(): JSX.Element {
           </TabPanel>
           <TabPanel name="labreports">
             <LabAndImagingTab patient={patient} orders={orders} resource={resource} />
+          </TabPanel>
+          <TabPanel name="medication">
+            <MedicationTab patient={patient} />
           </TabPanel>
           <TabPanel name="careplans">
             <CarePlansTab requestGroups={requestGroups} />
@@ -273,6 +277,11 @@ function LabAndImagingTab({
     <>
       <h2>Labs &amp; Imaging</h2>
       <br />
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <MedplumLink className="medplum-button" to={`/Questionnaire/e8f6fb62-ad9f-4351-a0f6-108e839ed89c`}>
+          Order
+        </MedplumLink>
+      </div>
       <h3>Active</h3>
       <table className="foo-table">
         <thead>
@@ -354,6 +363,34 @@ function LabAndImagingTab({
             </tr>
           )}
         </tbody>
+      </table>
+      <br />
+    </>
+  );
+}
+
+function MedicationTab({ patient }: { patient: Patient }): JSX.Element {
+  return (
+    <>
+      <h2>Medication</h2>
+      <br />
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <MedplumLink className="medplum-button" to={`/Questionnaire/84c9ca25-a770-462a-9479-12e168627d91`}>
+          Order
+        </MedplumLink>
+      </div>
+      <h3>Active</h3>
+      <table className="foo-table">
+        <thead>
+          <tr>
+            <th style={{ width: '20%' }}>Category</th>
+            <th style={{ width: '30%' }}>Code</th>
+            <th style={{ width: '25%' }}>Last Updated</th>
+            <th style={{ width: '15%' }}>Status</th>
+            <th style={{ width: '10%' }} />
+          </tr>
+        </thead>
+        <tbody></tbody>
       </table>
       <br />
     </>
