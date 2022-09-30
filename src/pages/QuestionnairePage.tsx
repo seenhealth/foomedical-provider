@@ -59,11 +59,15 @@ export function QuestionnairePage(): JSX.Element {
       <Document>
         <TabSwitch value={tab || defaultTab}>
           <TabPanel name="preview">
-            <QuestionnaireForm questionnaire={questionnaire} onSubmit={() => alert('You submitted the preview')} />
+            <QuestionnaireForm
+              key={questionnaire.id}
+              questionnaire={questionnaire}
+              onSubmit={() => alert('You submitted the preview')}
+            />
           </TabPanel>
           <TabPanel name="editor">
             <h2>Editor</h2>
-            <QuestionnaireBuilder questionnaire={questionnaire} onSubmit={onSubmit} />
+            <QuestionnaireBuilder key={questionnaire.id} questionnaire={questionnaire} onSubmit={onSubmit} />
           </TabPanel>
         </TabSwitch>
       </Document>

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export function FormsList(): JSX.Element {
   const medplum = useMedplum();
   const navigate = useNavigate();
-  const forms = medplum.searchResources('Questionnaire').read();
+  const forms = medplum.searchResources('Questionnaire', 'context=patient-form').read();
 
   return (
     <Document>

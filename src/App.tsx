@@ -46,6 +46,8 @@ export function App(): JSX.Element | null {
           { name: 'Care Plans', target: '/careplans' },
           { name: 'Messages', target: '/messages' },
           { name: 'Rx', target: '/rx' },
+          { name: 'Transition of Care', target: '/Questionnaire/d582df91-be08-420a-80e1-e5ee0aff250c' },
+          { name: 'Send Message', target: '/Questionnaire/f1b01312-662c-4fad-80af-53ef1eb319c2' },
         ],
       },
     ],
