@@ -13,7 +13,7 @@ export function HomePage(): JSX.Element {
   const medplum = useMedplum();
   const profile = useMedplumProfile() as Practitioner;
   const [reassignTask, setReassignTask] = useState<Task>();
-  const tasks = medplum.searchResources('Task', '_sort=for').read();
+  const tasks = medplum.searchResources('Task', '_sort=patient').read();
 
   return (
     <>
