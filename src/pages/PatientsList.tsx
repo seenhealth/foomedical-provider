@@ -1,4 +1,5 @@
-import { Button, Document, ResourceBadge, useMedplum } from '@medplum/react';
+import { Button } from '@mantine/core';
+import { Document, ResourceBadge, useMedplum } from '@medplum/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,7 +29,7 @@ export function PatientsList(): JSX.Element {
               <td>{patient.birthDate}</td>
               <td>{patient.telecom?.find((cp) => cp.system === 'email')?.value}</td>
               <td>
-                <Button size="small" primary={true} onClick={() => navigate(`/Patient/${patient.id}`)}>
+                <Button size="sm" onClick={() => navigate(`/Patient/${patient.id}`)}>
                   View
                 </Button>
               </td>
@@ -37,8 +38,8 @@ export function PatientsList(): JSX.Element {
         </tbody>
       </table>
       <div style={{ marginTop: 50 }}>
-        <Button primary={true}>New</Button>
-        <Button primary={true}>Import</Button>
+        <Button>New</Button>
+        <Button>Import</Button>
       </div>
     </Document>
   );

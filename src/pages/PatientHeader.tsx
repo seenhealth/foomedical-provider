@@ -1,6 +1,7 @@
+import { ScrollArea } from '@mantine/core';
 import { calculateAgeString, formatAddress, formatHumanName } from '@medplum/core';
 import { HumanName, Patient, Reference } from '@medplum/fhirtypes';
-import { Avatar, Scrollable, useResource } from '@medplum/react';
+import { ResourceAvatar, useResource } from '@medplum/react';
 import React from 'react';
 
 import './PatientHeader.css';
@@ -21,9 +22,9 @@ export function PatientHeader(props: PatientHeaderProps): JSX.Element | null {
   const phone = patient.telecom?.find((t) => t.system === 'phone');
 
   return (
-    <Scrollable className="medplum-surface" height={150}>
+    <ScrollArea>
       <div className="medplum-patient-header">
-        <Avatar value={patient} size="large" color={getDefaultColor(patient)} />
+        <ResourceAvatar value={patient} color={getDefaultColor(patient)} />
         <div className="medplum-patient-header-details">
           <div>
             <strong>Name:</strong> {formatHumanName(name)}
@@ -48,16 +49,16 @@ export function PatientHeader(props: PatientHeaderProps): JSX.Element | null {
           )}
         </div>
       </div>
-    </Scrollable>
+    </ScrollArea>
   );
 }
 
-function getDefaultColor(patient: Patient): string {
+export function getDefaultColor(patient: Patient): string | undefined {
   if (patient.gender === 'male') {
-    return '#79a3d2'; // blue
+    return 'blue';
   }
   if (patient.gender === 'female') {
-    return '#c58686'; // pink
+    return 'pink';
   }
-  return '#6cb578'; // green
+  return undefined;
 }

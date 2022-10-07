@@ -1,3 +1,4 @@
+import { Text } from '@mantine/core';
 import { Logo, SignInForm } from '@medplum/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +12,7 @@ export function SignInPage(): JSX.Element {
       onSuccess={() => navigate('/')}
     >
       <Logo size={32} />
-      <h1>Sign in to Foo Provider</h1>
+      <Text size="lg">Sign in to Foo Provider</Text>
     </SignInForm>
   );
 }
