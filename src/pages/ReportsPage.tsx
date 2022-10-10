@@ -1,13 +1,10 @@
-import { stringify } from '@medplum/core';
-import { Button, Document, MedplumLink, ResourceBadge, useMedplum } from '@medplum/react';
+import { Document, useMedplum } from '@medplum/react';
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export function ReportsPage(): JSX.Element {
   const medplum = useMedplum();
-  const navigate = useNavigate();
   const patients = medplum.search('Patient', '_summary=count').read();
-  console.log(patients.total);
   const hypertensivePatients = medplum
     .search('Condition', 'clinical-status:contains=active&code=59621000&_summary=count')
     .read();

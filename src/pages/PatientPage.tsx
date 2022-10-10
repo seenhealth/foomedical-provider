@@ -1,3 +1,4 @@
+import { Button, Paper, ScrollArea, Tabs } from '@mantine/core';
 import { formatDateTime, getPropertyDisplayName } from '@medplum/core';
 import {
   Appointment,
@@ -10,23 +11,18 @@ import {
   ServiceRequest,
 } from '@medplum/fhirtypes';
 import {
-  Button,
   CodeableConceptDisplay,
   DiagnosticReportDisplay,
   Document,
-  Loading,
   MedplumLink,
   RequestGroupDisplay,
   ResourceTable,
   StatusBadge,
-  Tab,
-  TabList,
-  TabPanel,
-  TabSwitch,
   useMedplum,
 } from '@medplum/react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Loading } from '../components/Loading';
 import { PatientHeader } from './PatientHeader';
 import { TaskHeader } from './TaskHeader';
 
@@ -118,36 +114,40 @@ export function PatientPage(): JSX.Element {
     <>
       {taskId && <TaskHeader taskId={taskId} />}
       <PatientHeader key={id} patient={patient} />
-      <TabList value={tab} onChange={(newTab) => navigate(`/Patient/${id}/${newTab}?task=${taskId}`)}>
-        <Tab name="overview" label="Overview" />
-        <Tab name="visits" label="Visits" />
-        <Tab name="labreports" label="Labs &amp; Imaging" />
-        <Tab name="medication" label="Medication" />
-        <Tab name="careplans" label="Care Plans" />
-        <Tab name="forms" label="Forms" />
-      </TabList>
-      <Document>
-        <TabSwitch value={tab}>
-          <TabPanel name="overview">
+      <Tabs value={tab} onTabChange={(newTab) => navigate(`/Patient/${id}/${newTab}?task=${taskId}`)}>
+        <Paper>
+          <ScrollArea>
+            <Tabs.List style={{ whiteSpace: 'nowrap', flexWrap: 'nowrap' }}>
+              <Tabs.Tab value="overview">Overview</Tabs.Tab>
+              <Tabs.Tab value="visits">Visits</Tabs.Tab>
+              <Tabs.Tab value="labreports">Labs &amp; Imaging</Tabs.Tab>
+              <Tabs.Tab value="medication">Medication</Tabs.Tab>
+              <Tabs.Tab value="careplans">Care Plans</Tabs.Tab>
+              <Tabs.Tab value="forms">Forms</Tabs.Tab>
+            </Tabs.List>
+          </ScrollArea>
+        </Paper>
+        <Document>
+          <Tabs.Panel value="overview">
             <OverviewTab id={id} taskId={taskId} allResources={allResources} />
-          </TabPanel>
-          <TabPanel name="visits">
+          </Tabs.Panel>
+          <Tabs.Panel value="visits">
             <VisitsTab appointments={appointments} />
-          </TabPanel>
-          <TabPanel name="labreports">
+          </Tabs.Panel>
+          <Tabs.Panel value="labreports">
             <LabAndImagingTab patient={patient} orders={orders} resource={resource} />
-          </TabPanel>
-          <TabPanel name="medication">
+          </Tabs.Panel>
+          <Tabs.Panel value="medication">
             <MedicationTab patient={patient} />
-          </TabPanel>
-          <TabPanel name="careplans">
+          </Tabs.Panel>
+          <Tabs.Panel value="careplans">
             <CarePlansTab requestGroups={requestGroups} />
-          </TabPanel>
-          <TabPanel name="forms">
+          </Tabs.Panel>
+          <Tabs.Panel value="forms">
             <FormsTab />
-          </TabPanel>
-        </TabSwitch>
-      </Document>
+          </Tabs.Panel>
+        </Document>
+      </Tabs>
     </>
   );
 }
@@ -237,9 +237,7 @@ function LabAndImagingTab({
             <h2>Labs &amp; Imaging</h2>
             <iframe src={resource.presentedForm[0].url} width="850" height="600"></iframe>
             <hr />
-            <Button primary={true} size="large">
-              Approve
-            </Button>
+            <Button size="lg">Approve</Button>
           </>
         );
       }
@@ -254,9 +252,7 @@ function LabAndImagingTab({
           <hr />
           <img src="/knee-mri.png" />
           <hr />
-          <Button primary={true} size="large">
-            Approve
-          </Button>
+          <Button size="lg">Approve</Button>
         </>
       );
     }
@@ -265,9 +261,7 @@ function LabAndImagingTab({
         <h2>{getPropertyDisplayName(resource.resourceType)}</h2>
         <ResourceTable ignoreMissingValues={true} value={resource} />
         <hr style={{ margin: '20px 0' }} />
-        <Button primary={true} size="large">
-          Approve
-        </Button>
+        <Button size="lg">Approve</Button>
       </>
     );
   }

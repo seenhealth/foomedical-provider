@@ -1,20 +1,11 @@
+import { Paper, ScrollArea, Tabs } from '@mantine/core';
 import { formatDateTime, normalizeErrorString } from '@medplum/core';
 import { Questionnaire } from '@medplum/fhirtypes';
-import {
-  Avatar,
-  Document,
-  QuestionnaireBuilder,
-  QuestionnaireForm,
-  Scrollable,
-  Tab,
-  TabList,
-  TabPanel,
-  TabSwitch,
-  useMedplum,
-} from '@medplum/react';
+import { Document, QuestionnaireBuilder, QuestionnaireForm, useMedplum } from '@medplum/react';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 import './PatientHeader.css';
 import './PatientPage.css';
 
@@ -36,41 +27,41 @@ export function QuestionnairePage(): JSX.Element {
   }
 
   return (
-    <>
-      <Scrollable className="medplum-surface" height={100}>
-        <div className="medplum-patient-header">
-          <div className="medplum-patient-header-details">
-            <div>
-              <strong>Title:</strong> {questionnaire.title}
-            </div>
-            <div>
-              <strong>Publisher:</strong> {questionnaire.publisher}
-            </div>
-            <div>
-              <strong>Last Updated:</strong> {formatDateTime(questionnaire.meta?.lastUpdated)}
+    <Tabs value={tab || defaultTab} onTabChange={(newTab) => navigate(`/Questionnaire/${id}/${newTab}`)}>
+      <Paper>
+        <ScrollArea>
+          <div className="medplum-patient-header">
+            <div className="medplum-patient-header-details">
+              <div>
+                <strong>Title:</strong> {questionnaire.title}
+              </div>
+              <div>
+                <strong>Publisher:</strong> {questionnaire.publisher}
+              </div>
+              <div>
+                <strong>Last Updated:</strong> {formatDateTime(questionnaire.meta?.lastUpdated)}
+              </div>
             </div>
           </div>
-        </div>
-      </Scrollable>
-      <TabList value={tab || defaultTab} onChange={(newTab) => navigate(`/Questionnaire/${id}/${newTab}`)}>
-        <Tab name="preview" label="Preview" />
-        <Tab name="editor" label="Editor" />
-      </TabList>
+        </ScrollArea>
+        <Tabs.List>
+          <Tabs.Tab value="preview">Preview</Tabs.Tab>
+          <Tabs.Tab value="editor">Editor</Tabs.Tab>
+        </Tabs.List>
+      </Paper>
       <Document>
-        <TabSwitch value={tab || defaultTab}>
-          <TabPanel name="preview">
-            <QuestionnaireForm
-              key={questionnaire.id}
-              questionnaire={questionnaire}
-              onSubmit={() => alert('You submitted the preview')}
-            />
-          </TabPanel>
-          <TabPanel name="editor">
-            <h2>Editor</h2>
-            <QuestionnaireBuilder key={questionnaire.id} questionnaire={questionnaire} onSubmit={onSubmit} />
-          </TabPanel>
-        </TabSwitch>
+        <Tabs.Panel value="preview">
+          <QuestionnaireForm
+            key={questionnaire.id}
+            questionnaire={questionnaire}
+            onSubmit={() => alert('You submitted the preview')}
+          />
+        </Tabs.Panel>
+        <Tabs.Panel value="editor">
+          <h2>Editor</h2>
+          <QuestionnaireBuilder key={questionnaire.id} questionnaire={questionnaire} onSubmit={onSubmit} />
+        </Tabs.Panel>
       </Document>
-    </>
+    </Tabs>
   );
 }

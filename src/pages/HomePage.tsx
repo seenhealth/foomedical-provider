@@ -1,6 +1,7 @@
+import { Button, Group } from '@mantine/core';
 import { formatGivenName } from '@medplum/core';
 import { HumanName, Patient, Practitioner, Reference, Task } from '@medplum/fhirtypes';
-import { Button, Document, ResourceBadge, StatusBadge, useMedplum, useMedplumProfile } from '@medplum/react';
+import { Document, ResourceBadge, StatusBadge, useMedplum, useMedplumProfile } from '@medplum/react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ReassignDialog } from './ReassignDialog';
@@ -35,19 +36,21 @@ export function HomePage(): JSX.Element {
                   {task.priority && <StatusBadge status={task.priority as string} />}
                 </td>
                 <td>
-                  {getTaskActions(task).map((action, actionIndex) => (
-                    <Button
-                      key={`action-${actionIndex}`}
-                      size="small"
-                      primary={action.primary}
-                      onClick={() => navigate(action.href)}
-                    >
-                      {action.label}
+                  <Group spacing="xs">
+                    {getTaskActions(task).map((action, actionIndex) => (
+                      <Button
+                        key={`action-${actionIndex}`}
+                        size="xs"
+                        variant="outline"
+                        onClick={() => navigate(action.href)}
+                      >
+                        {action.label}
+                      </Button>
+                    ))}
+                    <Button size="xs" variant="outline" onClick={() => setReassignTask(task)}>
+                      Reassign
                     </Button>
-                  ))}
-                  <Button size="small" onClick={() => setReassignTask(task)}>
-                    Reassign
-                  </Button>
+                  </Group>
                 </td>
               </tr>
             ))}

@@ -1,6 +1,7 @@
+import { Button, Modal } from '@mantine/core';
 import { createReference } from '@medplum/core';
 import { Practitioner, Resource, Task } from '@medplum/fhirtypes';
-import { Dialog, Form, ResourceInput, useMedplum } from '@medplum/react';
+import { Form, ResourceInput, useMedplum } from '@medplum/react';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -29,12 +30,13 @@ export function ReassignDialog(props: ReassignDialogProps): JSX.Element | null {
   }
 
   return (
-    <Dialog title="Reassign Task" visible={true} onOk={onOk} onCancel={props.onCancel}>
+    <Modal title="Reassign Task" opened={true} onClose={props.onCancel}>
       <div style={{ width: 500, padding: '20px 50px' }}>
-        <Form onSubmit={props.onOk}>
+        <Form onSubmit={onOk}>
           <ResourceInput resourceType="Practitioner" name="assignee" onChange={setAssignee} />
+          <Button type="submit">Reassign</Button>
         </Form>
       </div>
-    </Dialog>
+    </Modal>
   );
 }

@@ -1,5 +1,6 @@
+import { Button } from '@mantine/core';
 import { formatDateTime } from '@medplum/core';
-import { Button, Document, useMedplum } from '@medplum/react';
+import { Document, useMedplum } from '@medplum/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,13 +28,13 @@ export function FormsList(): JSX.Element {
               <td>{form.publisher}</td>
               <td>{formatDateTime(form.meta?.lastUpdated)}</td>
               <td>
-                <Button size="small" primary={true} onClick={() => navigate(`/Questionnaire/${form.id}`)}>
+                <Button size="sm" onClick={() => navigate(`/Questionnaire/${form.id}`)}>
                   View
                 </Button>
-                <Button size="small" onClick={() => navigate(`/Questionnaire/${form.id}/editor`)}>
+                <Button size="sm" onClick={() => navigate(`/Questionnaire/${form.id}/editor`)}>
                   Edit
                 </Button>
-                <Button size="small" onClick={() => navigate(`/Questionnaire/${form.id}/assign`)}>
+                <Button size="sm" onClick={() => navigate(`/Questionnaire/${form.id}/assign`)}>
                   Assign
                 </Button>
               </td>
@@ -42,8 +43,8 @@ export function FormsList(): JSX.Element {
         </tbody>
       </table>
       <div style={{ marginTop: 50 }}>
-        <Button primary={true}>New</Button>
-        <Button primary={true}>Import</Button>
+        <Button>New</Button>
+        <Button>Import</Button>
       </div>
     </Document>
   );

@@ -1,5 +1,6 @@
+import { Button } from '@mantine/core';
 import { formatDateTime } from '@medplum/core';
-import { Button, Document, useMedplum } from '@medplum/react';
+import { Document, useMedplum } from '@medplum/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,21 +28,13 @@ export function CarePlansList(): JSX.Element {
               <td>{planDefinition.publisher}</td>
               <td>{formatDateTime(planDefinition.meta?.lastUpdated)}</td>
               <td>
-                <Button size="small" primary={true} onClick={() => navigate(`/PlanDefinition/${planDefinition.id}`)}>
+                <Button size="sm" onClick={() => navigate(`/PlanDefinition/${planDefinition.id}`)}>
                   View
                 </Button>
-                <Button
-                  size="small"
-                  primary={true}
-                  onClick={() => navigate(`/PlanDefinition/${planDefinition.id}/editor`)}
-                >
+                <Button size="sm" onClick={() => navigate(`/PlanDefinition/${planDefinition.id}/editor`)}>
                   Edit
                 </Button>
-                <Button
-                  size="small"
-                  primary={true}
-                  onClick={() => navigate(`/PlanDefinition/${planDefinition.id}/assign`)}
-                >
+                <Button size="sm" onClick={() => navigate(`/PlanDefinition/${planDefinition.id}/assign`)}>
                   Assign
                 </Button>
               </td>
@@ -50,8 +43,8 @@ export function CarePlansList(): JSX.Element {
         </tbody>
       </table>
       <div style={{ marginTop: 50 }}>
-        <Button primary={true}>New</Button>
-        <Button primary={true}>Import</Button>
+        <Button>New</Button>
+        <Button>Import</Button>
       </div>
     </Document>
   );
