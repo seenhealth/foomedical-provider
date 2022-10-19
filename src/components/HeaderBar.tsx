@@ -17,7 +17,7 @@ import {
   IconTrash,
 } from '@tabler/icons';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Location, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as Logo } from './logo-white.svg';
 
 const useStyles = createStyles((theme) => ({
@@ -96,15 +96,28 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const tabs = ['Worklist', 'Patients', 'Visits', 'Reports', 'Labs', 'Imaging', 'Care Plans', 'Messages', 'Rx'];
+const tabs: Record<string, string> = {
+  Worklist: '/',
+  Patients: '/patients',
+  Visits: '/visits',
+  Forms: '/forms',
+  Reports: '/reports',
+  'Care Plans': '/careplans',
+  Messages: '/messages',
+  Rx: '/rx',
+  'Transition of Care': '/Questionnaire/d582df91-be08-420a-80e1-e5ee0aff250c',
+  'Send Message': '/Questionnaire/f1b01312-662c-4fad-80af-53ef1eb319c2',
+};
 
 export function HeaderBar(): JSX.Element {
+  const location = useLocation();
+  const navigate = useNavigate();
   const profile = useMedplumProfile() as ProfileResource;
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
 
-  const items = tabs.map((tab) => (
+  const items = Object.keys(tabs).map((tab) => (
     <Tabs.Tab value={tab} key={tab}>
       {tab}
     </Tabs.Tab>
@@ -167,6 +180,8 @@ export function HeaderBar(): JSX.Element {
       <Container>
         <Tabs
           variant="outline"
+          value={getActiveTab(location)}
+          onTabChange={(value: string) => navigate(tabs[value])}
           classNames={{
             root: classes.tabs,
             tabsList: classes.tabsList,
@@ -178,4 +193,19 @@ export function HeaderBar(): JSX.Element {
       </Container>
     </div>
   );
+}
+
+function getActiveTab(location: Location): string {
+  const currentPath = location.pathname;
+  let bestTab = 'Worklist';
+  let bestCount = 0;
+
+  for (const [tab, url] of Object.entries(tabs)) {
+    if (currentPath.startsWith(url) && url.length > bestCount) {
+      bestTab = tab;
+      bestCount = url.length;
+    }
+  }
+
+  return bestTab;
 }
