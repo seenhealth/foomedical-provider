@@ -4,6 +4,7 @@ import {
   Appointment,
   CodeableConcept,
   DiagnosticReport,
+  DocumentReference,
   Patient,
   RequestGroup,
   Resource,
@@ -35,6 +36,7 @@ interface PatientGraphQLResponse {
     orders: ServiceRequest[];
     reports: DiagnosticReport[];
     requestGroups: RequestGroup[];
+    clinicalNotes: DocumentReference[];
   };
 }
 
@@ -94,6 +96,12 @@ export function PatientPage(): JSX.Element {
         meta { lastUpdated },
         code { text },
         action { id, title, resource { reference } }
+      },
+      clinicalNotes: DocumentReferenceList(category: "clinical-note" patient: "Patient/${id}") {
+        resourceType,
+        id,
+        description,
+        type { text, coding { code } }
       }
     }`;
     medplum.graphql(query).then(setResponse);
@@ -103,7 +111,7 @@ export function PatientPage(): JSX.Element {
     return <Loading />;
   }
 
-  const { patient, appointments, orders, reports, requestGroups } = response.data;
+  const { patient, appointments, orders, reports, requestGroups, clinicalNotes } = response.data;
 
   const allResources = [...appointments, ...orders, ...reports];
   allResources.sort((a, b) => (a.meta?.lastUpdated as string).localeCompare(b.meta?.lastUpdated as string));
@@ -124,6 +132,7 @@ export function PatientPage(): JSX.Element {
               <Tabs.Tab value="medication">Medication</Tabs.Tab>
               <Tabs.Tab value="careplans">Care Plans</Tabs.Tab>
               <Tabs.Tab value="forms">Forms</Tabs.Tab>
+              <Tabs.Tab value="clinicalnotes">Clinical Notes</Tabs.Tab>
             </Tabs.List>
           </ScrollArea>
         </Paper>
@@ -145,6 +154,9 @@ export function PatientPage(): JSX.Element {
           </Tabs.Panel>
           <Tabs.Panel value="forms">
             <FormsTab />
+          </Tabs.Panel>
+          <Tabs.Panel value="clinicalnotes">
+            <ClinicalNotesTab clinicalNotes={clinicalNotes} />
           </Tabs.Panel>
         </Document>
       </Tabs>
@@ -398,7 +410,7 @@ function CarePlansTab({ requestGroups }: { requestGroups: RequestGroup[] }): JSX
       <h2>Care Plans</h2>
       {requestGroups.map((requestGroup) => (
         <>
-          <h3>{requestGroup.code?.text}</h3>
+          <h3 key={requestGroup.id}>{requestGroup.code?.text}</h3>
           <RequestGroupDisplay
             value={requestGroup}
             onStart={() => console.log('Start task')}
@@ -424,6 +436,30 @@ function FormsTab(): JSX.Element {
   );
 }
 
+function ClinicalNotesTab({ clinicalNotes }: { clinicalNotes: DocumentReference[] }): JSX.Element {
+  console.debug('NOtes', clinicalNotes);
+  return (
+    <table className="foo-table">
+      <thead>
+        <tr>
+          <th style={{ width: '20%' }}>Type</th>
+          <th style={{ width: '80%' }}>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {clinicalNotes.map((note) => (
+          <tr key={note.id}>
+            <td>
+              <CodeableConceptDisplay value={note.type} />
+            </td>
+            <td>{note.description || ''}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 function resolveTab(input: string): string {
   if (!input) {
     return 'overview';
@@ -437,13 +473,11 @@ function resolveTab(input: string): string {
   if (input === 'CarePlan' || input === 'RequestGroup') {
     return 'careplans';
   }
-  if (
-    input === 'Media' ||
-    input === 'DocumentReference' ||
-    input === 'Questionnaire' ||
-    input === 'QuestionnaireResponse'
-  ) {
+  if (input === 'Questionnaire' || input === 'QuestionnaireResponse') {
     return 'forms';
+  }
+  if (input === 'DocumentReference' || input === 'Media') {
+    return 'clinicalnotes';
   }
   return input;
 }
