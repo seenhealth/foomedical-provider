@@ -477,8 +477,7 @@ function ClinicalNotePanel({ note }: { note: DocumentReference }): JSX.Element {
       medplum
         .download(url)
         .then((blob) => blob.text())
-        .then(setContent)
-        .catch((err) => toast.error(normalizeErrorString(err)));
+        .then(setContent);
   }, [medplum, note]);
   return <>{content}</>;
 }
