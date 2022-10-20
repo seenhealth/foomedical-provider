@@ -1,9 +1,10 @@
-import { Button, Paper, ScrollArea, Tabs } from '@mantine/core';
-import { formatDateTime, getPropertyDisplayName } from '@medplum/core';
+import { Accordion, Button, Group, Paper, ScrollArea, Tabs, Text } from '@mantine/core';
+import { formatDateTime, getPropertyDisplayName, normalizeErrorString } from '@medplum/core';
 import {
   Appointment,
   CodeableConcept,
   DiagnosticReport,
+  DocumentReference,
   Patient,
   RequestGroup,
   Resource,
@@ -25,6 +26,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loading } from '../components/Loading';
 import { PatientHeader } from './PatientHeader';
 import { TaskHeader } from './TaskHeader';
+import { toast } from 'react-toastify';
 
 import './PatientPage.css';
 
@@ -35,6 +37,7 @@ interface PatientGraphQLResponse {
     orders: ServiceRequest[];
     reports: DiagnosticReport[];
     requestGroups: RequestGroup[];
+    clinicalNotes: DocumentReference[];
   };
 }
 
@@ -94,6 +97,13 @@ export function PatientPage(): JSX.Element {
         meta { lastUpdated },
         code { text },
         action { id, title, resource { reference } }
+      },
+      clinicalNotes: DocumentReferenceList(category: "clinical-note" patient: "Patient/${id}") {
+        resourceType,
+        id,
+        description,
+        type { text, coding { code } }
+        content { attachment { url} }
       }
     }`;
     medplum.graphql(query).then(setResponse);
@@ -103,7 +113,7 @@ export function PatientPage(): JSX.Element {
     return <Loading />;
   }
 
-  const { patient, appointments, orders, reports, requestGroups } = response.data;
+  const { patient, appointments, orders, reports, requestGroups, clinicalNotes } = response.data;
 
   const allResources = [...appointments, ...orders, ...reports];
   allResources.sort((a, b) => (a.meta?.lastUpdated as string).localeCompare(b.meta?.lastUpdated as string));
@@ -124,6 +134,7 @@ export function PatientPage(): JSX.Element {
               <Tabs.Tab value="medication">Medication</Tabs.Tab>
               <Tabs.Tab value="careplans">Care Plans</Tabs.Tab>
               <Tabs.Tab value="forms">Forms</Tabs.Tab>
+              <Tabs.Tab value="clinicalnotes">Clinical Notes</Tabs.Tab>
             </Tabs.List>
           </ScrollArea>
         </Paper>
@@ -145,6 +156,9 @@ export function PatientPage(): JSX.Element {
           </Tabs.Panel>
           <Tabs.Panel value="forms">
             <FormsTab />
+          </Tabs.Panel>
+          <Tabs.Panel value="clinicalnotes">
+            <ClinicalNotesTab clinicalNotes={clinicalNotes} />
           </Tabs.Panel>
         </Document>
       </Tabs>
@@ -331,7 +345,7 @@ function LabAndImagingTab({
         </thead>
         <tbody>
           {completedOrders.map((order) => (
-            <tr>
+            <tr key={order.id}>
               <td>
                 <CodeableConceptDisplay value={order.category?.[0] as CodeableConcept} />
               </td>
@@ -398,7 +412,7 @@ function CarePlansTab({ requestGroups }: { requestGroups: RequestGroup[] }): JSX
       <h2>Care Plans</h2>
       {requestGroups.map((requestGroup) => (
         <>
-          <h3>{requestGroup.code?.text}</h3>
+          <h3 key={requestGroup.id}>{requestGroup.code?.text}</h3>
           <RequestGroupDisplay
             value={requestGroup}
             onStart={() => console.log('Start task')}
@@ -424,6 +438,50 @@ function FormsTab(): JSX.Element {
   );
 }
 
+function ClinicalNotesTab({ clinicalNotes }: { clinicalNotes: DocumentReference[] }): JSX.Element {
+  return (
+    <Accordion>
+      {clinicalNotes.map((note) => (
+        <Accordion.Item value={note.id || ''} key={note.id}>
+          <Accordion.Control>
+            <ClinicalNoteLabel note={note} />
+          </Accordion.Control>
+          <Accordion.Panel>
+            <ClinicalNotePanel note={note} />
+          </Accordion.Panel>
+        </Accordion.Item>
+      ))}
+    </Accordion>
+  );
+}
+
+function ClinicalNoteLabel({ note }: { note: DocumentReference }): JSX.Element {
+  return (
+    <Group noWrap>
+      <div>
+        <Text>{note.description}</Text>
+        <Text size="sm" color="dimmed" weight={400}>
+          {note.type?.text || ''}
+        </Text>
+      </div>
+    </Group>
+  );
+}
+
+function ClinicalNotePanel({ note }: { note: DocumentReference }): JSX.Element {
+  const [content, setContent] = useState<string>('');
+  const medplum = useMedplum();
+  useEffect(() => {
+    const url = note.content?.[0]?.attachment?.url;
+    url &&
+      medplum
+        .download(url)
+        .then((blob) => blob.text())
+        .then(setContent);
+  }, [medplum, note]);
+  return <>{content}</>;
+}
+
 function resolveTab(input: string): string {
   if (!input) {
     return 'overview';
@@ -437,13 +495,11 @@ function resolveTab(input: string): string {
   if (input === 'CarePlan' || input === 'RequestGroup') {
     return 'careplans';
   }
-  if (
-    input === 'Media' ||
-    input === 'DocumentReference' ||
-    input === 'Questionnaire' ||
-    input === 'QuestionnaireResponse'
-  ) {
+  if (input === 'Questionnaire' || input === 'QuestionnaireResponse') {
     return 'forms';
+  }
+  if (input === 'DocumentReference' || input === 'Media') {
+    return 'clinicalnotes';
   }
   return input;
 }
