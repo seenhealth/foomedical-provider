@@ -1,5 +1,5 @@
-import { Button, Paper, ScrollArea, Tabs } from '@mantine/core';
-import { formatDateTime, getPropertyDisplayName } from '@medplum/core';
+import { Accordion, Button, Group, Paper, ScrollArea, Tabs, Text } from '@mantine/core';
+import { formatDateTime, getPropertyDisplayName, normalizeErrorString } from '@medplum/core';
 import {
   Appointment,
   CodeableConcept,
@@ -26,6 +26,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loading } from '../components/Loading';
 import { PatientHeader } from './PatientHeader';
 import { TaskHeader } from './TaskHeader';
+import { toast } from 'react-toastify';
 
 import './PatientPage.css';
 
@@ -102,6 +103,7 @@ export function PatientPage(): JSX.Element {
         id,
         description,
         type { text, coding { code } }
+        content { attachment { url} }
       }
     }`;
     medplum.graphql(query).then(setResponse);
@@ -343,7 +345,7 @@ function LabAndImagingTab({
         </thead>
         <tbody>
           {completedOrders.map((order) => (
-            <tr>
+            <tr key={order.id}>
               <td>
                 <CodeableConceptDisplay value={order.category?.[0] as CodeableConcept} />
               </td>
@@ -437,27 +439,48 @@ function FormsTab(): JSX.Element {
 }
 
 function ClinicalNotesTab({ clinicalNotes }: { clinicalNotes: DocumentReference[] }): JSX.Element {
-  console.debug('NOtes', clinicalNotes);
   return (
-    <table className="foo-table">
-      <thead>
-        <tr>
-          <th style={{ width: '20%' }}>Type</th>
-          <th style={{ width: '80%' }}>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {clinicalNotes.map((note) => (
-          <tr key={note.id}>
-            <td>
-              <CodeableConceptDisplay value={note.type} />
-            </td>
-            <td>{note.description || ''}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <Accordion>
+      {clinicalNotes.map((note) => (
+        <Accordion.Item value={note.id || ''} key={note.id}>
+          <Accordion.Control>
+            <ClinicalNoteLabel note={note} />
+          </Accordion.Control>
+          <Accordion.Panel>
+            <ClinicalNotePanel note={note} />
+          </Accordion.Panel>
+        </Accordion.Item>
+      ))}
+    </Accordion>
   );
+}
+
+function ClinicalNoteLabel({ note }: { note: DocumentReference }): JSX.Element {
+  return (
+    <Group noWrap>
+      <div>
+        <Text>{note.description}</Text>
+        <Text size="sm" color="dimmed" weight={400}>
+          {note.type?.text || ''}
+        </Text>
+      </div>
+    </Group>
+  );
+}
+
+function ClinicalNotePanel({ note }: { note: DocumentReference }): JSX.Element {
+  const [content, setContent] = useState<string>('');
+  const medplum = useMedplum();
+  useEffect(() => {
+    const url = note.content?.[0]?.attachment?.url;
+    url &&
+      medplum
+        .download(url)
+        .then((blob) => blob.text())
+        .then(setContent)
+        .catch((err) => toast.error(normalizeErrorString(err)));
+  }, [medplum, note]);
+  return <>{content}</>;
 }
 
 function resolveTab(input: string): string {
