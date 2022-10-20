@@ -469,7 +469,9 @@ function ClinicalNoteLabel({ note }: { note: DocumentReference }): JSX.Element {
 }
 
 function ClinicalNotePanel({ note }: { note: DocumentReference }): JSX.Element {
-  const [content, setContent] = useState<string>('');
+  const [content, setContent] = useState<string>(
+    'Labore et dolore magna aliqua. Orci phasellus egestas tellus rutrum tellus pellentesque eu.'
+  );
   const medplum = useMedplum();
   useEffect(() => {
     const url = note.content?.[0]?.attachment?.url;
