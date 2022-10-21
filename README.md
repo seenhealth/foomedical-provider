@@ -1,6 +1,9 @@
 <h1 align="center">Foo Provider</h1>
 <p align="center">A free and open-source physician portal from the Medplum team.</p>
 <p align="center">
+  <a href="https://github.com/medplum/foomedical-provider/actions">
+    <img src="https://github.com/medplum/foomedical-provider/actions/workflows/build.yml/badge.svg" />
+  </a>
   <a href="https://github.com/medplum/foomedical-provider/blob/main/LICENSE.txt">
     <img src="https://img.shields.io/badge/license-Apache-blue.svg" />
   </a>
