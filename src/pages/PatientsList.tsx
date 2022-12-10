@@ -22,7 +22,7 @@ export function PatientsList(): JSX.Element {
         </thead>
         <tbody>
           {patients.map((patient) => (
-            <tr>
+            <tr key={patient.id}>
               <td>
                 <ResourceBadge value={patient} />
               </td>
