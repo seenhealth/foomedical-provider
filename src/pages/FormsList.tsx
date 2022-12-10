@@ -23,7 +23,7 @@ export function FormsList(): JSX.Element {
         </thead>
         <tbody>
           {forms.map((form) => (
-            <tr>
+            <tr key={form.id}>
               <td>{form.title}</td>
               <td>{form.publisher}</td>
               <td>{formatDateTime(form.meta?.lastUpdated)}</td>
