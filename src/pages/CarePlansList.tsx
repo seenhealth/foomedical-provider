@@ -23,7 +23,7 @@ export function CarePlansList(): JSX.Element {
         </thead>
         <tbody>
           {planDefinitions.map((planDefinition) => (
-            <tr>
+            <tr key={planDefinition.id}>
               <td>{planDefinition.title}</td>
               <td>{planDefinition.publisher}</td>
               <td>{formatDateTime(planDefinition.meta?.lastUpdated)}</td>
