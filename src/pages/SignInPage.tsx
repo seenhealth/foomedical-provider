@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 export function SignInPage(): JSX.Element {
   const navigate = useNavigate();
+
   return (
     <SignInForm
       projectId="daae901c-c8d7-4246-9f24-486147b82224"
