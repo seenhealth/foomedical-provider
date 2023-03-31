@@ -15,7 +15,7 @@ import {
   IconStar,
   IconSwitchHorizontal,
   IconTrash,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import React, { useState } from 'react';
 import { Link, Location, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as Logo } from './logo-white.svg';
@@ -136,7 +136,7 @@ export function HeaderBar(): JSX.Element {
           <Menu
             width={260}
             position="bottom-end"
-            transition="pop-top-right"
+            transitionProps={{ transition: 'pop-top-right' }}
             shadow="xl"
             onClose={() => setUserMenuOpened(false)}
             onOpen={() => setUserMenuOpened(true)}
